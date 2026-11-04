@@ -1,7 +1,7 @@
 # 小梦 · 住在手机里的 AI 桌宠
 
 一个住在 Android 手机/平板里的 AI 桌宠：它看得见你的屏幕、点得动任何 App、会说话会听话。
-这一版给它加了**随 APK 打包的离线语音包**（拔了网线也能开口），并把默认形象重画了一遍。
+这一版给它加了**随 APK 打包的离线语音包**——**说不说、听不听都归你，断网也能又听又说**——并把默认形象重画了一遍。
 
 **介绍与下载页：** https://qianqianlaifeng.github.io/xiaomeng-pet/
 **安装包（Releases）：** https://github.com/qianqianlaifeng/xiaomeng-pet/releases
@@ -25,10 +25,13 @@
 **本仓库只放站点文件**（`index.html` + `assets/`）。源码 = 上游仓库 + 本版改动补丁：
 
 1. `git clone https://github.com/kuafuai/andee`
-2. 按 [Releases 里的 `xiaomeng-changes.patch`](https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch) 应用改动（21 个文件）
+2. 按 [Releases 里的 `xiaomeng-changes.patch`](https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch) 应用改动（文件数以补丁头部的 `diff --git` 计数为准，大二进制不在里面）
 3. 补上补丁里不含的二进制配料（补丁头部写了来源与应有字节数）：
    - sherpa-onnx **v2.0.1** android tarball → `libsherpa-onnx-jni.so` + `libonnxruntime.so`（arm64-v8a / armeabi-v7a / x86_64）放进 `app/src/main/jniLibs/<abi>/`
-   - `csukuangfj/vits-zh-aishell3` → 7 个文件放进 `app/src/main/assets/tts-model/`，其中 `vits-aishell3.int8.onnx` 应为 **39,870,124 字节**（下残缺文件会得到 26 MB 的坏包，引擎报 `Protobuf parsing failed`）
+   - `csukuangfj/vits-zh-aishell3` → 7 个文件放进 `app/src/main/assets/tts-model/`，其中 `vits-aishell3.int8.onnx` 应为 **39,870,124 字节**
+   - `csukuangfj/sherpa-onnx-streaming-zipformer-small-ctc-zh-int8-2025-04-01` → 3 个文件（`model.int8.onnx`、`bbpe.model`、`tokens.txt`）放进 `app/src/main/assets/asr-model/`，其中 `model.int8.onnx` 应为 **26,342,340 字节**
+
+   两个 `.onnx` 都必须逐字节完整：断点续传留下的残件会让引擎报 `Protobuf parsing failed`。
 
 ```bash
 # 需要 JDK 17 与 Android SDK（platform 34 + build-tools 34.0.0）
