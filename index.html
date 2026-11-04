@@ -402,7 +402,7 @@ details[open] summary::after{transform:rotate(-135deg)}
     <div class="grid c3" style="margin:26px 0 30px">
       <div class="card reveal"><h3>怎么做到</h3><p>语音引擎和模型<b>整个打进安装包</b>，不联网、不注册、不上传文字。一个模型出 6 个音色。</p></div>
       <div class="card reveal" style="--d:80ms"><h3>怎么切换</h3><p>设置 → 朗读（说）→ 选「离线语音包」，下面出现 6 个音色。改音色<b>下一句就生效</b>，不用重启、不用重连。</p></div>
-      <div class="card reveal" style="--d:160ms"><h3>代价是什么</h3><p>包大了 28 MB（语音模型的体积）。回答是<b>一句一句</b>念的，说完第一句就能开始播，不用等整段。</p></div>
+      <div class="card reveal" style="--d:160ms"><h3>代价是什么</h3><p>完整版比极速版大 37 MB（语音模型 + 推理库）。回答是<b>一句一句</b>念的，说完第一句就能开始播，不用等整段。</p></div>
     </div>
 
     <h3 class="reveal" style="margin-bottom:10px">六个音色，先试听</h3>
@@ -513,8 +513,8 @@ details[open] summary::after{transform:rotate(-135deg)}
     <div style="margin-top:22px" class="reveal">
       <details><summary>我的手机能用吗？</summary><div class="body">
         <p>Android 11（2020 年前后发布的机型基本都满足）或更高、任意品牌都行。低于 11 装不上——不是没测试，而是这个项目必须用两个 API 30 才有的能力：<span class="mono">AccessibilityService.takeScreenshot</span>（截屏）和 <span class="mono">ACTION_IME_ENTER</span>（正确提交输入）。调低只会得到一个能装但看不见屏幕的废包。</p></div></details>
-      <details><summary>为什么要 85 MB？</summary><div class="body">
-        <p>离线语音包：模型 38 MB + 推理库（每个 ABI 各带一份 onnxruntime 与 sherpa JNI，约 27 MB）。这就是"拔了网线也能说话"的价钱。</p></div></details>
+      <details><summary>完整版为什么比极速版大 37 MB？</summary><div class="body">
+        <p>那 37 MB 全是离线语音包：语音模型 38 MB（压进包里约 28 MB）+ 推理库约 9 MB。这就是"拔了网线也能说话"的价钱。不想花这个流量就下<b>极速版</b>，功能一样，只是说话用系统音色。</p></div></details>
       <details><summary>要花钱吗？数据会发给谁？</summary><div class="body">
         <p>软件免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的一键路线。数据流向只有两条——你选定的模型/语音服务商，以及可选的云端语音识别。<b>记忆不进任何后端</b>（笔记本只在本机），保险箱内容不出设备，离线语音包连文本都不出设备。</p></div></details>
       <details><summary>「小梦」和桌面上的 Andee 是什么关系？</summary><div class="body">
