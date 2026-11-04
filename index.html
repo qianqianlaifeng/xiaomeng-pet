@@ -541,6 +541,7 @@ details[open] summary::after{transform:rotate(-135deg)}
         </tbody>
       </table></div>
       <p>下载后如果浏览器提示"该文件可能有害"，是因为它来自 GitHub 而不是应用商店——侧载软件都会这样。装完记得只开<b>悬浮窗</b>和<b>无障碍</b>这两个权限，其他按需。</p>
+      <p>装好可以先对一下校验值：电脑上用 <span class="mono">certutil -hashfile 文件名.apk SHA256</span>（Windows）或 <span class="mono">shasum -a 256 文件名.apk</span>（macOS / Linux）算一次，跟上面那行比。<b>对不上多半是从「加速线路」下的</b>——那是第三方镜像，版本更新后它们会缓存一阵旧包；换 <b>GitHub 直连</b>那条重下就一致了。</p>
     </div></details>
   </section>
 
