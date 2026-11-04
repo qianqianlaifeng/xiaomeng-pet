@@ -3,374 +3,530 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>小梦 · 住在手机里的 AI 桌宠（Andee 小梦版）</title>
-<meta name="description" content="一个跑在 Android 手机和平板上的 AI 桌宠：看得见你的屏幕、点得动任何 App、会说话会听话，自带离线语音包，不联网也能开口。基于开源项目 Andee 的个人改造版。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%235aa7f5'/%3E%3Ccircle cx='23' cy='29' r='6' fill='%230d1c33'/%3E%3Ccircle cx='41' cy='29' r='6' fill='%230d1c33'/%3E%3Cpath d='M25 41q7 6 14 0' stroke='%230d1c33' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='21' cy='27' r='2' fill='%23fff'/%3E%3Ccircle cx='39' cy='27' r='2' fill='%23fff'/%3E%3C/svg%3E">
+<title>小梦 · 住在手机里的 AI 桌宠</title>
+<meta name="description" content="跑在 Android 手机和平板上的 AI 桌宠：看得见你的屏幕、点得动任何 App、会说话会听话。自带离线语音包，断网也能开口。">
+<meta name="theme-color" content="#080d18">
+<meta property="og:title" content="小梦 · 住在手机里的 AI 桌宠">
+<meta property="og:description" content="它不是又一个聊天机器人：它看得见你屏幕上的东西，也能替你点下去。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%232180ff'/%3E%3Crect x='26' y='14' width='7' height='18' rx='3.5' fill='%23fff' transform='rotate(-11 29.5 23)'/%3E%3Crect x='39' y='14' width='7' height='18' rx='3.5' fill='%23fff' transform='rotate(-11 42.5 23)'/%3E%3C/svg%3E">
 <style>
-  :root{
-    --ink:#12203a; --ink-2:#42536f; --ink-3:#6b7b95;
-    --sky:#2f7fe0; --sky-deep:#1c5cb0; --coral:#ff8a6b; --coral-soft:#ffd9cd;
-    --paper:#f6f8fc; --card:#ffffff; --line:#e2e8f2;
-    --radius:14px; --shadow:0 1px 2px rgba(18,32,58,.06), 0 10px 30px rgba(18,32,58,.06);
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0; background:var(--paper); color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,sans-serif;
-    font-size:17px; line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--sky-deep)}
-  h1,h2,h3{line-height:1.25; margin:0 0 .5em; letter-spacing:-.01em}
-  h1{font-size:clamp(2rem,6vw,3.1rem); font-weight:800}
-  h2{font-size:clamp(1.45rem,3.6vw,2rem); font-weight:750}
-  h3{font-size:1.08rem; font-weight:700}
-  p{margin:0 0 1em}
-  .wrap{max-width:1100px; margin:0 auto; padding:0 20px}
-  .section{padding:64px 0}
-  .muted{color:var(--ink-2)}
-  .small{font-size:.92rem; color:var(--ink-3)}
+/* ============ tokens ============ */
+:root{
+  --bg:#080d18; --bg-2:#0d1526; --surface:rgba(255,255,255,.045);
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
+  --ink:#eaf1ff; --ink-2:#a9bad6; --ink-3:#7286a6;
+  --azure:#2180ff; --azure-2:#5aa8ff; --azure-3:#9fd0ff;
+  --coral:#ff8a6b;
+  --r:18px; --r-sm:12px;
+  --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --maxw:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,sans-serif;
+  font-size:17px;line-height:1.75;letter-spacing:.01em;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* 背景：两层缓慢漂移的光 + 细颗粒 */
+body::before,body::after{content:"";position:fixed;inset:-20vh -20vw;z-index:-2;pointer-events:none}
+body::before{
+  background:
+    radial-gradient(46vw 46vw at 12% 8%,rgba(33,128,255,.26),transparent 62%),
+    radial-gradient(40vw 40vw at 88% 22%,rgba(120,80,255,.16),transparent 60%),
+    radial-gradient(52vw 52vw at 62% 96%,rgba(20,150,190,.14),transparent 62%);
+  animation:drift 34s var(--ease) infinite alternate;
+}
+body::after{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+  opacity:.045;z-index:-1;mix-blend-mode:overlay;
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(-3%,2%,0) scale(1.06)}
+  100%{transform:translate3d(2%,-3%,0) scale(1.02)}
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+section{padding:clamp(56px,9vw,104px) 0;position:relative}
+h1,h2,h3{line-height:1.18;margin:0 0 .55em;letter-spacing:-.02em;font-weight:800}
+h1{font-size:clamp(2.6rem,8.4vw,4.6rem);line-height:1.02}
+h2{font-size:clamp(1.7rem,4.4vw,2.7rem)}
+h3{font-size:1.07rem;font-weight:700;letter-spacing:0}
+p{margin:0 0 1em}
+a{color:var(--azure-3)}
+.muted{color:var(--ink-2)}
+.small{font-size:.9rem;color:var(--ink-3)}
+.kicker{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--azure-2);font-weight:800;margin-bottom:14px}
+.grad{background:linear-gradient(96deg,#fff,#a9d4ff 52%,#69b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-  /* nav */
-  .nav{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.6) blur(10px);
-       background:rgba(246,248,252,.86); border-bottom:1px solid var(--line)}
-  .nav .wrap{display:flex; align-items:center; gap:16px; height:60px}
-  .brand{display:flex; align-items:center; gap:10px; font-weight:800; color:var(--ink); text-decoration:none}
-  .brand svg{width:30px; height:30px; flex:none}
-  .nav nav{margin-left:auto; display:flex; gap:4px; flex-wrap:wrap}
-  .nav nav a{padding:8px 10px; border-radius:8px; text-decoration:none; color:var(--ink-2); font-size:.95rem}
-  .nav nav a:hover{background:#eaf1fb; color:var(--ink)}
+/* ============ 导航 ============ */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px) saturate(1.5);
+  background:rgba(8,13,24,.72);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:14px;height:64px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.dot{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 32% 26%,#6fb2ff,#1567d8 68%,#0a4bb0);position:relative;flex:none;box-shadow:0 0 18px rgba(33,128,255,.55)}
+.dot::before,.dot::after{content:"";position:absolute;top:5px;width:4px;height:9px;border-radius:2px;background:#fff;transform:rotate(-11deg)}
+.dot::before{left:8px}.dot::after{left:15px}
+.nav nav{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap}
+.nav nav a{padding:9px 12px;border-radius:10px;text-decoration:none;color:var(--ink-2);font-size:.93rem;transition:color .2s,background .2s}
+.nav nav a:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+@media(max-width:900px){
+  .nav .wrap{gap:10px}
+  .nav nav{display:none}
+  .nav .btn{margin-left:auto}
+}
+.bar{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--azure),var(--azure-3));transition:width .12s linear}
 
-  /* hero */
-  .hero{padding:56px 0 40px; overflow:hidden}
-  .hero-grid{display:grid; gap:36px; align-items:center}
-  @media(min-width:860px){.hero-grid{grid-template-columns:1.15fr .85fr}}
-  .eyebrow{display:inline-flex; align-items:center; gap:8px; background:#e8f2ff; color:var(--sky-deep);
-           border:1px solid #cfe2fb; padding:5px 12px; border-radius:999px; font-size:.86rem; font-weight:600}
-  .lede{font-size:clamp(1.02rem,2.4vw,1.2rem); color:var(--ink-2); max-width:36rem}
-  .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin:26px 0 10px}
-  .btn{display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:48px;
-       padding:12px 20px; border-radius:12px; font-weight:700; text-decoration:none; font-size:1rem;
-       transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
-  .btn-primary{background:var(--sky); color:#fff; box-shadow:0 6px 18px rgba(47,127,224,.28)}
-  .btn-primary:hover{background:var(--sky-deep); transform:translateY(-1px)}
-  .btn-ghost{background:var(--card); color:var(--ink); border:1px solid var(--line)}
-  .btn-ghost:hover{border-color:#c8d6ea; transform:translateY(-1px)}
-  .specs{display:flex; flex-wrap:wrap; gap:6px 18px; color:var(--ink-3); font-size:.92rem}
-  .specs b{color:var(--ink-2); font-weight:600}
+/* ============ 按钮 ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:14px 24px;
+  border-radius:14px;font-weight:700;text-decoration:none;font-size:1rem;position:relative;overflow:hidden;
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease),background .22s}
+.btn-p{background:linear-gradient(120deg,#2b8bff,#0f63d8);color:#fff;box-shadow:0 16px 34px -12px rgba(43,139,255,.8),inset 0 1px 0 rgba(255,255,255,.28)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 22px 44px -14px rgba(43,139,255,.95),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-p::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.34) 48%,transparent 58%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.btn-p:hover::after{transform:translateX(120%)}
+.btn-g{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line-2)}
+.btn-g:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
 
-  .pet{width:100%; max-width:340px; margin:0 auto; display:block}
-  .pet-note{text-align:center; margin-top:6px}
+/* ============ hero ============ */
+.hero{padding-top:clamp(34px,6vw,72px);overflow:visible}
+.hero .wrap{display:grid;gap:clamp(28px,5vw,56px);align-items:center}
+@media(min-width:940px){.hero .wrap{grid-template-columns:1.06fr .94fr}}
+.badge{display:inline-flex;align-items:center;gap:9px;padding:6px 14px 6px 10px;border-radius:999px;
+  background:rgba(33,128,255,.12);border:1px solid rgba(90,168,255,.3);color:var(--azure-3);
+  font-size:.84rem;font-weight:650;margin-bottom:20px}
+.badge i{width:7px;height:7px;border-radius:50%;background:#4fd08a;box-shadow:0 0 0 0 rgba(79,208,138,.7);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(79,208,138,.55)}70%{box-shadow:0 0 0 9px rgba(79,208,138,0)}100%{box-shadow:0 0 0 0 rgba(79,208,138,0)}}
+.lede{font-size:clamp(1.05rem,2.3vw,1.24rem);color:var(--ink-2);max-width:34rem}
+.lede b{color:var(--ink)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--ink-3);font-size:.9rem}
+.chips span{display:inline-flex;gap:7px;align-items:center}
+.chips b{color:var(--ink-2);font-weight:650}
 
-  /* cards */
-  .grid{display:grid; gap:16px}
-  @media(min-width:640px){.grid.c2{grid-template-columns:1fr 1fr}}
-  @media(min-width:900px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px 20px 16px; box-shadow:var(--shadow)}
-  .card h3{display:flex; align-items:center; gap:9px}
-  .card p:last-child{margin-bottom:0}
-  .ico{width:30px;height:30px;flex:none;border-radius:9px;background:#e8f2ff;display:grid;place-items:center;color:var(--sky-deep);font-weight:800}
-  ul.tight{margin:0; padding-left:1.1em}
-  ul.tight li{margin:.28em 0}
+/* 球 */
+.stage{position:relative;display:grid;place-items:center;min-height:340px}
+.halo{position:absolute;width:78%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(33,128,255,.5),transparent 66%);filter:blur(28px);animation:breathe 6s var(--ease) infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.09);opacity:1}}
+.pet{width:100%;max-width:400px;position:relative;z-index:1;--px:0;--py:0}
+.pet .inner{transform:translate(calc(var(--px)*10px),calc(var(--py)*10px));transition:transform .5s var(--ease);animation:bob 6s var(--ease) infinite}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -10px}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 6.4s infinite}
+@keyframes blink{0%,92%,100%{transform:rotate(-11deg) scaleY(1)}95%{transform:rotate(-11deg) scaleY(.07)}97%{transform:rotate(-11deg) scaleY(1)}}
+.pet-note{text-align:center;margin-top:4px}
 
-  /* control panel highlight */
-  .panel{background:linear-gradient(180deg,#fff, #fbfdff); border:1px solid var(--line);
-         border-radius:18px; padding:24px; box-shadow:var(--shadow)}
-  .two{display:grid; gap:22px}
-  @media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
-  .kv{display:grid; grid-template-columns:auto 1fr; gap:8px 14px; align-items:start}
-  .kv dt{font-weight:700; color:var(--ink); white-space:nowrap}
-  .kv dd{margin:0; color:var(--ink-2)}
-  .lock{border-left:3px solid var(--coral); padding-left:14px; margin:0 0 14px}
-  .lock b{color:var(--ink)}
+/* ============ 跑马灯 ============ */
+.marq{border-block:1px solid var(--line);background:rgba(255,255,255,.025);padding:16px 0;overflow:hidden;position:relative}
+.marq::before,.marq::after{content:"";position:absolute;top:0;bottom:0;width:12%;z-index:2;pointer-events:none}
+.marq::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.marq::after{right:0;background:linear-gradient(270deg,var(--bg),transparent)}
+.track{display:flex;gap:12px;width:max-content;animation:slide 38s linear infinite}
+.marq:hover .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.pill{white-space:nowrap;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink-2);font-size:.92rem}
+.pill b{color:var(--azure-3);font-weight:650}
 
-  /* voices */
-  .voice{display:grid; gap:8px}
-  .voice audio{width:100%; height:44px}
-  .voice .name{font-weight:700}
-  .voice .id{color:var(--ink-3); font-size:.85rem}
+/* ============ 卡片 ============ */
+.grid{display:grid;gap:16px}
+.c2{grid-template-columns:1fr}
+@media(min-width:700px){.c2{grid-template-columns:1fr 1fr}}
+.c3{grid-template-columns:1fr}
+@media(min-width:760px){.c3{grid-template-columns:repeat(3,1fr)}}
+.bento{grid-template-columns:1fr}
+@media(min-width:820px){.bento{grid-template-columns:repeat(6,1fr)}
+  .bento>.sp3{grid-column:span 3}.bento>.sp2{grid-column:span 2}}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+  border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative;overflow:hidden;
+  transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(140deg,rgba(90,168,255,.5),transparent 40%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .3s}
+.card:hover{transform:translateY(-4px);border-color:rgba(90,168,255,.32);box-shadow:var(--shadow)}
+.card:hover::before{opacity:1}
+.card h3{display:flex;align-items:center;gap:10px}
+.card p:last-child{margin-bottom:0}
+.ico{width:32px;height:32px;flex:none;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(140deg,rgba(33,128,255,.3),rgba(33,128,255,.08));border:1px solid rgba(90,168,255,.3);
+  color:var(--azure-3);font-weight:800;font-size:.9rem}
+ul.tight{margin:0;padding-left:1.15em}
+ul.tight li{margin:.32em 0;color:var(--ink-2)}
+ul.tight li::marker{color:var(--azure-2)}
 
-  /* steps */
-  ol.steps{counter-reset:s; list-style:none; padding:0; margin:0}
-  ol.steps li{position:relative; padding:0 0 18px 44px}
-  ol.steps li::before{counter-increment:s; content:counter(s); position:absolute; left:0; top:-2px;
-    width:30px;height:30px;border-radius:50%;background:var(--sky);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.9rem}
-  ol.steps li b{display:block; margin-bottom:2px}
+/* ============ 面板 ============ */
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  border:1px solid var(--line);border-radius:22px;padding:clamp(20px,3.4vw,32px);box-shadow:var(--shadow)}
+.two{display:grid;gap:26px}
+@media(min-width:860px){.two{grid-template-columns:1fr 1fr}}
+.lock{border-left:2px solid var(--coral);padding-left:15px;margin:0 0 15px;color:var(--ink-2)}
+.lock b{color:var(--ink);display:block;margin-bottom:2px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+ol.steps li{position:relative;padding:0 0 20px 46px;color:var(--ink-2)}
+ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:-1px;
+  width:32px;height:32px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:.92rem;
+  background:linear-gradient(140deg,#2b8bff,#0f63d8);color:#fff;box-shadow:0 8px 20px -8px rgba(43,139,255,.9)}
+ol.steps li b{color:var(--ink);display:block}
 
-  /* tables */
-  .tbl{width:100%; border-collapse:collapse; font-size:.95rem; overflow:hidden; border-radius:12px}
-  .tbl th,.tbl td{text-align:left; padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top}
-  .tbl th{background:#f2f6fc; font-weight:700; color:var(--ink-2); font-size:.88rem}
-  .tbl tr:last-child td{border-bottom:none}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.83em; word-break:break-all}
+/* ============ 音色 ============ */
+.voice{display:flex;flex-direction:column;gap:12px}
+.voice .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.voice .name{font-weight:750;font-size:1.05rem}
+.voice .id{color:var(--ink-3);font-size:.82rem}
+.eq{display:flex;align-items:flex-end;gap:3px;height:22px}
+.eq i{width:3px;height:5px;border-radius:2px;background:rgba(90,168,255,.35);transition:background .2s}
+.playing .eq i{background:var(--azure-2);animation:bounce 1s var(--ease) infinite}
+.playing .eq i:nth-child(2){animation-delay:.12s}.playing .eq i:nth-child(3){animation-delay:.24s}
+.playing .eq i:nth-child(4){animation-delay:.36s}.playing .eq i:nth-child(5){animation-delay:.48s}
+@keyframes bounce{0%,100%{height:5px}50%{height:20px}}
+audio{width:100%;height:40px;filter:invert(.92) saturate(.7);border-radius:8px}
 
-  details{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:0 18px; margin-bottom:10px}
-  details summary{cursor:pointer; padding:15px 0; font-weight:700; list-style:none; display:flex; gap:10px; align-items:center; min-height:44px}
-  details summary::-webkit-details-marker{display:none}
-  details summary::before{content:"+"; color:var(--sky); font-weight:800; font-size:1.2rem; line-height:1}
-  details[open] summary::before{content:"–"}
-  details .body{padding:0 0 16px; color:var(--ink-2)}
-  details .body p:last-child{margin-bottom:0}
+/* ============ 表格 ============ */
+.tbl{width:100%;border-collapse:collapse;font-size:.95rem;min-width:560px}
+.tbl th,.tbl td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl th{color:var(--ink-3);font-weight:650;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:background .2s}
+.tbl tbody tr:hover{background:rgba(255,255,255,.04)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82em;color:var(--azure-3);word-break:break-all}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0}
+/* 网格/弹性子项默认 min-width:auto，会被内部宽表格顶穿视口——统一放开 */
+.grid>*,.two>*,.bento>*,.hero .wrap>*,.stats>*{min-width:0}
 
-  .foot{border-top:1px solid var(--line); padding:34px 0 54px; color:var(--ink-3); font-size:.92rem}
-  .foot a{color:var(--ink-2)}
-  .badge{display:inline-block; background:#fff3ee; border:1px solid #ffd9cd; color:#a2451f;
-         border-radius:8px; padding:2px 9px; font-size:.82rem; font-weight:600}
+/* ============ FAQ ============ */
+details{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:var(--r-sm);padding:0 20px;margin-bottom:10px;transition:border-color .25s,background .25s}
+details:hover{border-color:rgba(90,168,255,.3)}
+details[open]{background:rgba(255,255,255,.055)}
+summary{cursor:pointer;padding:17px 0;font-weight:700;list-style:none;display:flex;gap:12px;align-items:center;min-height:52px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--azure-2);border-bottom:2px solid var(--azure-2);transform:rotate(45deg);transition:transform .25s var(--ease);flex:none}
+details[open] summary::after{transform:rotate(-135deg)}
+.body{padding:0 0 18px;color:var(--ink-2)}
+.body p:last-child{margin-bottom:0}
+
+/* ============ 数字 ============ */
+.stats{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);margin-top:26px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{border:1px solid var(--line);border-radius:var(--r-sm);padding:18px;background:rgba(255,255,255,.03)}
+.stat b{display:block;font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(120deg,#fff,#7bb8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{color:var(--ink-3);font-size:.88rem}
+
+/* ============ 入场 ============ */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0ms)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ 页脚 ============ */
+.foot{border-top:1px solid var(--line);padding:38px 0 60px;color:var(--ink-3);font-size:.92rem;background:rgba(255,255,255,.02)}
+.foot a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line-2)}
+.foot a:hover{color:var(--ink)}
+.tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:.8rem;font-weight:650;
+  background:rgba(255,138,107,.12);border:1px solid rgba(255,138,107,.3);color:#ffb59f}
+
+@media (max-width:560px){
+  .cta .btn{flex:1 1 100%}
+  .stage{min-height:250px}
+  .card{padding:18px}
+  .panel{padding:18px}
+  .stat{padding:14px}
+  .chips{gap:6px 14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="#top">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="#5aa7f5"/><circle cx="23" cy="29" r="6" fill="#0d1c33"/><circle cx="41" cy="29" r="6" fill="#0d1c33"/><path d="M25 41q7 6 14 0" stroke="#0d1c33" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="21" cy="27" r="2" fill="#fff"/><circle cx="39" cy="27" r="2" fill="#fff"/></svg>
-      小梦
-    </a>
+    <a class="brand" href="#top"><span class="dot"></span>小梦</a>
     <nav>
       <a href="#can">能干什么</a>
       <a href="#control">AI 控制</a>
       <a href="#voice">语音包</a>
+      <a href="#look">形象</a>
       <a href="#install">安装</a>
-      <a href="#faq">常见问题</a>
-      <a href="#license">授权与改动</a>
+      <a href="#faq">FAQ</a>
+      <a href="#license">授权</a>
     </nav>
+    <a class="btn btn-p" style="min-height:42px;padding:9px 16px;font-size:.92rem" href="#get">下载</a>
+    <div class="bar" id="bar"></div>
   </div>
 </header>
 
 <main id="top">
 
-<section class="hero wrap">
-  <div class="hero-grid">
+<!-- ================= hero ================= -->
+<section class="hero">
+  <div class="wrap">
     <div>
-      <span class="eyebrow">Android · 开源项目 Andee 的个人改造版</span>
-      <h1 style="margin-top:14px">小梦<br>住在手机里的 AI 桌宠</h1>
+      <span class="badge"><i></i>Android · 会自己动手的桌宠</span>
+      <h1>小梦<br><span class="grad">住在手机里的 AI</span></h1>
       <p class="lede">
         它不是又一个聊天机器人：<b>它看得见你屏幕上的东西，也能替你点下去</b>。
         桌面上多一颗会呼吸的小球，点一下跟它说话，长按看它做了什么。
-        这一版给它加了<b>随 APK 打包的离线语音包</b>——拔了网线它也会开口。
+        自带<b>离线语音包</b>——拔了网线它也会开口。
       </p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">下载 Android 版（arm64，几乎人人能用）</a>
-        <a class="btn btn-ghost" href="#install">先看安装步骤</a>
+      <div class="cta">
+        <a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">下载 Android 版</a>
+        <a class="btn btn-g" href="#control">它怎么控制手机 →</a>
       </div>
-      <p class="specs">
-        <span><b>需要</b> Android 11 及以上</span>
+      <div class="chips">
+        <span><b>系统</b> Android 11+</span>
         <span><b>体积</b> 85.7 MB</span>
-        <span><b>版本</b> 0.9.1 小梦版（build 21）</span>
-        <span><b>费用</b> 软件免费，AI 模型自备 key</span>
-      </p>
+        <span><b>版本</b> 0.9.1 · build 21</span>
+        <span><b>语音</b> 6 个音色，离线可用</span>
+      </div>
     </div>
-    <div>
-      <svg class="pet" viewBox="0 0 340 340" role="img" aria-label="小梦的形象示意：一颗天空蓝的圆球，两颗深色豆豆眼带高光，小小对称的笑，双颊淡粉腮红">
+
+    <div class="stage">
+      <div class="halo"></div>
+      <svg class="pet" id="pet" viewBox="0 0 360 360" role="img" aria-label="小梦：一颗蓝色圆球，两颗白色胶囊眼同向倾斜，高挂在右上方，下面一点点笑">
         <defs>
-          <radialGradient id="g" cx="38%" cy="30%" r="78%">
-            <stop offset="0%" stop-color="#a8dcff"/><stop offset="52%" stop-color="#5aa7f5"/><stop offset="100%" stop-color="#3f7fc9"/>
+          <radialGradient id="ball" cx="33%" cy="25%" r="84%">
+            <stop offset="0%" stop-color="#7cbcff"/>
+            <stop offset="46%" stop-color="#2b8bff"/>
+            <stop offset="100%" stop-color="#0a4bb8"/>
           </radialGradient>
-          <radialGradient id="rim" cx="50%" cy="50%" r="50%">
-            <stop offset="74%" stop-color="rgba(255,138,107,0)"/><stop offset="100%" stop-color="rgba(255,138,107,.55)"/>
-          </radialGradient>
-          <radialGradient id="blush" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="rgba(255,120,150,.5)"/><stop offset="100%" stop-color="rgba(255,120,150,0)"/>
+          <radialGradient id="shade" cx="50%" cy="50%" r="50%">
+            <stop offset="72%" stop-color="rgba(0,0,0,0)"/>
+            <stop offset="100%" stop-color="rgba(4,16,40,.45)"/>
           </radialGradient>
         </defs>
-        <ellipse cx="170" cy="312" rx="88" ry="14" fill="rgba(18,32,58,.09)"/>
-        <circle cx="170" cy="168" r="132" fill="url(#g)"/>
-        <circle cx="170" cy="168" r="132" fill="url(#rim)"/>
-        <ellipse cx="112" cy="222" rx="30" ry="17" fill="url(#blush)"/>
-        <ellipse cx="228" cy="222" rx="30" ry="17" fill="url(#blush)"/>
-        <ellipse cx="118" cy="162" rx="21" ry="21" fill="#0d1c33"/>
-        <ellipse cx="222" cy="162" rx="21" ry="21" fill="#0d1c33"/>
-        <circle cx="110" cy="153" r="6.5" fill="#fff" opacity=".92"/>
-        <circle cx="214" cy="153" r="6.5" fill="#fff" opacity=".92"/>
-        <circle cx="127" cy="172" r="3.4" fill="#bcdcff" opacity=".85"/>
-        <circle cx="231" cy="172" r="3.4" fill="#bcdcff" opacity=".85"/>
-        <path d="M145 232q25 20 50 0" stroke="#0d1c33" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <ellipse cx="180" cy="330" rx="96" ry="14" fill="rgba(0,0,0,.35)"/>
+        <g class="inner">
+          <circle cx="180" cy="180" r="150" fill="url(#ball)"/>
+          <circle cx="180" cy="180" r="150" fill="url(#shade)"/>
+          <rect class="eye" x="195" y="85" width="20" height="52" rx="10" fill="#f7fbff"/>
+          <rect class="eye" x="255.4" y="85" width="20" height="52" rx="10" fill="#f7fbff"/>
+          <path d="M213.7 178.1 Q224.8 190.6 235.9 178.1" fill="none" stroke="rgba(8,32,72,.72)" stroke-width="3" stroke-linecap="round"/>
+        </g>
       </svg>
-      <p class="small pet-note">形象示意（海报图）。真机是 OpenGL 实时渲染，会呼吸、会眨眼、心情会变颜色。</p>
     </div>
   </div>
 </section>
 
-<section class="section wrap" id="can">
-  <h2>它到底能干什么</h2>
-  <p class="muted" style="max-width:44rem">下面每一条都对应应用里真实存在的工具，不是愿景。<span class="badge">全部在你手机本机执行</span></p>
-  <div class="grid c3" style="margin-top:22px">
+<!-- ================= 跑马灯 ================= -->
+<div class="marq" aria-hidden="true">
+  <div class="track" id="track">
+    <span class="pill"><b>点按</b> 任何 App 的按钮</span>
+    <span class="pill"><b>滑动</b> 翻页与拖动</span>
+    <span class="pill"><b>输入</b> 文字并回车</span>
+    <span class="pill"><b>截图</b> 看懂当前界面</span>
+    <span class="pill"><b>启动</b> App、打开链接</span>
+    <span class="pill"><b>设</b> 闹钟、读写日历</span>
+    <span class="pill"><b>读</b> 通知与短信</span>
+    <span class="pill"><b>扫码</b> 二维码 / 条码</span>
+    <span class="pill"><b>离线</b> 语音包 6 音色</span>
+    <span class="pill"><b>唤醒词</b> 完全本地判定</span>
+    <span class="pill"><b>保险箱</b> 密码只替你键入</span>
+    <span class="pill"><b>机器狗</b> 接上就是它的腿</span>
+    <span class="pill"><b>朋友设备</b> 互相派活</span>
+    <span class="pill"><b>笔记本</b> 只存你这台机器</span>
+  </div>
+</div>
 
-    <div class="card">
-      <h3><span class="ico">眼</span>看屏幕</h3>
-      <p>同时走两条路：<b>无障碍树</b>拿到界面元素和坐标，<b>截图 + 视觉定位模型</b>拿画面。两者互为备份，读不到元素时还能放大某一小块反复看清。</p>
+<!-- ================= 能干什么 ================= -->
+<section id="can">
+  <div class="wrap">
+    <p class="kicker reveal">Capabilities</p>
+    <h2 class="reveal" style="--d:60ms">它到底能干什么</h2>
+    <p class="muted reveal" style="--d:120ms;max-width:46rem">下面每一条都对应应用里真实注册的工具，不是愿景。全部在你手机本机执行。</p>
+
+    <div class="grid bento" style="margin-top:26px">
+      <div class="card sp3 reveal"><h3><span class="ico">眼</span>看屏幕</h3>
+        <p>两条路同时走：<b>无障碍树</b>拿到界面元素和坐标，<b>截图 + 视觉定位模型</b>拿到画面。读不到元素时还能把某一小块放大反复看清。</p></div>
+      <div class="card sp3 reveal" style="--d:80ms"><h3><span class="ico">手</span>动屏幕</h3>
+        <p>点按、长按、拖动、跨屏滑动、输入并回车、返回 / 主页 / 多任务 / 通知栏 / 快捷设置，还能"等界面变成想要的样子"再继续。</p></div>
+      <div class="card sp2 reveal" style="--d:40ms"><h3><span class="ico">机</span>系统与设备</h3>
+        <p>启动 App、开链接、设闹钟、读写日历、查联系人、发短信、读通知与通话记录、调音量亮度、查位置步数电量。拨号要你明确同意才会真拨出去。</p></div>
+      <div class="card sp2 reveal" style="--d:120ms"><h3><span class="ico">嘴</span>说与听</h3>
+        <p>回答会念出来：本页新增<b>离线语音包</b>；听你说话走云端识别；喊醒它的<b>唤醒词判定完全在本地</b>跑。</p></div>
+      <div class="card sp2 reveal" style="--d:200ms"><h3><span class="ico">记</span>记忆与保险箱</h3>
+        <p>八栏笔记本：自我、在意的事、日记、日程、人、维基、回忆、待办，只存本机。账号密码进系统 Keystore，只替你敲进输入框。</p></div>
+      <div class="card sp3 reveal" style="--d:80ms"><h3><span class="ico">伴</span>多个身体</h3>
+        <p>跟朋友的设备配对后能互相派活、互相转告；接上 USB 机器狗（CH340/FTDI 串口）时，那条狗被当成<b>它自己的腿</b>——「我过去看看」，不是"我遥控一个玩具"。</p></div>
+      <div class="card sp3 reveal" style="--d:160ms"><h3><span class="ico">脑</span>自己找办法</h3>
+        <p>你说"我想喝可乐"，它要自己判断该打开哪个外卖 App、怎么搜、怎么下单，而不是等你给出步骤。想用什么大模型由你填，OpenAI 兼容接口即可。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AI 控制 ================= -->
+<section id="control">
+  <div class="wrap">
+    <p class="kicker reveal">Control</p>
+    <h2 class="reveal" style="--d:60ms">能真的让 AI 控制手机吗</h2>
+    <p class="muted reveal" style="--d:120ms;max-width:48rem">能——这正是这个项目的核心，也是它跟普通语音助手最不一样的地方。代价是你要给它两个系统权限，并清楚它被允许做什么。</p>
+
+    <div class="panel two" style="margin-top:26px">
+      <div class="reveal">
+        <h3 style="margin-bottom:16px">装好后要开的两个权限</h3>
+        <ol class="steps">
+          <li><b>悬浮窗（显示在其他应用上层）</b>那颗球要能盖在任何 App 上面。</li>
+          <li><b>无障碍服务</b>"控制手机"的开关。安卓只允许无障碍服务读取界面并代替你点按；不开这一项，它只能聊天、干不了活。</li>
+        </ol>
+        <p class="small">按需再授权：麦克风（说话）、通知读取（看你收到的消息）、相机（把摄像头当眼睛）、USB（连机器狗，逐设备弹窗确认）。</p>
+      </div>
+      <div class="reveal" style="--d:120ms">
+        <h3 style="margin-bottom:16px">它被明确不允许做的事</h3>
+        <div class="lock"><b>陌生人递来的话，不算你的指令</b>由通知或好友消息触发的回合，碰不到保险箱、不能派活给别人、不能改你的自我认知 / 在意的事 / 日记 / 日程，也不能动舞台和场景。</div>
+        <div class="lock"><b>锁屏时全部屏幕操作禁用</b>没有解锁，它就点不了任何东西。</div>
+        <div class="lock"><b>密码只进不出</b>保险箱里的密码只能被键入输入框，永远不回显、不进上下文、不发往远端模型。</div>
+        <div class="lock"><b>一句"怎么退出"不会被误杀</b>语音退出要求整句匹配（例如「退出小梦」），问句不会关掉它。</div>
+        <p class="small">另外：支付、输密码这类高安全界面，系统可能只让它看到黑框——那种情况它会回头请你手动完成那一步。</p>
+      </div>
     </div>
 
-    <div class="card">
-      <h3><span class="ico">手</span>动屏幕</h3>
+    <div class="stats">
+      <div class="stat reveal"><b data-to="174">0</b><span>离线模型里的说话人数</span></div>
+      <div class="stat reveal" style="--d:80ms"><b data-to="6">0</b><span>随包提供的音色</span></div>
+      <div class="stat reveal" style="--d:160ms"><b data-to="0" data-suffix=" 项">0</b><span>语音包需要的密钥</span></div>
+      <div class="stat reveal" style="--d:240ms"><b data-to="2">0</b><span>控制手机需要的权限</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 语音包 ================= -->
+<section id="voice">
+  <div class="wrap">
+    <p class="kicker reveal">Offline voice pack</p>
+    <h2 class="reveal" style="--d:60ms">自带离线语音包</h2>
+    <p class="muted reveal" style="--d:120ms;max-width:48rem">
+      以前它说话只有两条路：系统 TTS 引擎（各家手机质量天差地别）或云端合成（要密钥、要网）。
+      现在推理引擎和模型整个打进 APK：<b>断网也能说话，不用注册、不用密钥、不上传文本</b>。
+    </p>
+    <div class="grid c3" style="margin:26px 0 30px">
+      <div class="card reveal"><h3>怎么做到</h3><p>sherpa-onnx 推理库（三个 ABI 各一份）+ <span class="mono">vits-aishell3</span> 多说话人模型 38 MB。<b>一个模型出 6 个音色</b>，不是 6 个模型。</p></div>
+      <div class="card reveal" style="--d:80ms"><h3>怎么切换</h3><p>设置 → 朗读（说）→ 选「离线语音包」，下面出现 6 个音色。改音色<b>下一句就生效</b>，不用重启、不用重连。</p></div>
+      <div class="card reveal" style="--d:160ms"><h3>代价是什么</h3><p>APK 大 65 MB；输出 8 kHz（电话音质），首次加载约 1 秒，合成约 0.5× 实时——按句切分，第一句很快就响。</p></div>
+    </div>
+
+    <h3 class="reveal" style="margin-bottom:10px">六个音色，先试听</h3>
+    <p class="small reveal" style="margin-bottom:18px">下面就是<b>用 APK 里那份一模一样的模型文件</b>在电脑上直接跑出来的原声，没有后期。同一句：「你好，我是住在你屏幕里的桌宠。今天晴，26 度，要不要一起出去走走？」</p>
+    <div class="grid c3" id="voices">
+      <div class="card voice reveal"><div class="top"><span class="name">星辰</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">默认 · 说话人 140</div><audio controls preload="none" src="assets/voices/star-140.wav"></audio></div>
+      <div class="card voice reveal" style="--d:60ms"><div class="top"><span class="name">薄荷</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">说话人 14</div><audio controls preload="none" src="assets/voices/mint-14.wav"></audio></div>
+      <div class="card voice reveal" style="--d:120ms"><div class="top"><span class="name">春晓</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">说话人 84</div><audio controls preload="none" src="assets/voices/spring-84.wav"></audio></div>
+      <div class="card voice reveal" style="--d:60ms"><div class="top"><span class="name">可可</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">说话人 70</div><audio controls preload="none" src="assets/voices/cocoa-70.wav"></audio></div>
+      <div class="card voice reveal" style="--d:120ms"><div class="top"><span class="name">暖阳</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">说话人 7</div><audio controls preload="none" src="assets/voices/sun-7.wav"></audio></div>
+      <div class="card voice reveal" style="--d:180ms"><div class="top"><span class="name">夜莺</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div><div class="id">说话人 119</div><audio controls preload="none" src="assets/voices/night-119.wav"></audio></div>
+    </div>
+    <p class="small" style="margin-top:14px">这 6 个是语料里 174 个说话人中的 6 个<b>不同说话人</b>。我试过用基频和长期谱给它们排"音高阶梯"，实测同一人换一句就能差到跟两个人之间一样多，所以<b>名字只是标签、不代表音色高低</b>。</p>
+  </div>
+</section>
+
+<!-- ================= 形象 ================= -->
+<section id="look">
+  <div class="wrap">
+    <p class="kicker reveal">The face</p>
+    <h2 class="reveal" style="--d:60ms">形象是怎么定的</h2>
+    <div class="panel two" style="margin-top:22px">
+      <div class="reveal">
+        <p>按你给的参考图做的：<b>一颗蓝色球 + 两颗白色胶囊眼，同向倾斜、整对偏向右上</b>——那种斜着看人的感觉，不是正对着你瞪。没有角、没有耳朵、没有描边、没有腮红。</p>
+        <p>这颗球是<b>程序化绘制</b>的，全部长相就是一串数字，改一个数就换一个部位。页首那颗球会呼吸、会眨眼、会跟着鼠标偏，用的就是应用里的同一组参数。</p>
+        <p class="small">参考图里没有嘴。真机上心情变化需要嘴来表情，所以留了一点点笑；不想要也可以把它调没。</p>
+      </div>
+      <div class="reveal" style="--d:100ms">
+        <h3 style="margin-bottom:12px">从参考图量出来的数</h3>
+        <div class="scroll-x"><table class="tbl">
+          <tbody>
+            <tr><td>眼睛位置（相对球心）</td><td class="mono">(+0.20 r, +0.45 r) / (+0.62 r, +0.53 r)</td></tr>
+            <tr><td>胶囊长 / 粗</td><td class="mono">0.35 r / 0.13 r</td></tr>
+            <tr><td>倾斜方向</td><td class="mono">两颗同向，顶端向左 10–11°</td></tr>
+            <tr><td>蓝色取样</td><td class="mono">核心 (0.04,0.50,1.00) · 高光 (0.20,0.57,1.00)</td></tr>
+            <tr><td>落到应用里的值</td><td class="mono">eyePairX 0.320 · eyeY 0.400 · eyeRadius 0.058 · eyeCyl 0.185 · eyeLean 11°</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">为了让两颗眼同向倾斜、整对偏心，给渲染器加了三个"零即关闭"的新参数，其他五个形象一个数都没动。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 安装 + 下载 ================= -->
+<section id="install">
+  <div class="wrap">
+    <p class="kicker reveal">Install</p>
+    <h2 class="reveal" style="--d:60ms">安装</h2>
+    <div class="panel" style="margin-top:22px">
+      <div class="two">
+        <ol class="steps reveal">
+          <li><b>下载 APK</b>下面下载表里选一个，不知道选哪个就下第一个（arm64）。</li>
+          <li><b>允许安装未知来源</b>浏览器点开后提示一次即可，这是侧载的正常流程。</li>
+          <li><b>打开悬浮窗 + 无障碍</b>首次进入会一步步带你开。不开无障碍它能聊天但干不了活。</li>
+        </ol>
+        <ol class="steps reveal" style="--d:100ms">
+          <li><b>填一个模型</b>设置里填 OpenAI 兼容的接口 / key / 模型名（也支持官方的一键路线）。不填模型它没法思考。</li>
+          <li><b>想离线说话</b>设置 → 朗读（说）→「离线语音包」，挑个音色。</li>
+          <li><b>断网试一句</b>飞行模式里让它说句话，能出声就是真离线。</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 id="get" style="margin:34px 0 12px">下载</h3>
+    <div class="panel scroll-x reveal">
+      <table class="tbl">
+        <thead><tr><th>版本</th><th>适合谁</th><th>大小</th><th>SHA-256 前 16 位</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">arm64-v8a</a></td><td>2017 年以后的绝大多数手机和平板</td><td>85.7 MB</td><td class="mono">0f2c9d71414db356</td></tr>
+          <tr><td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-armv7.apk">armeabi-v7a</a></td><td>更老的 32 位机型</td><td>84.2 MB</td><td class="mono">b51289b4d231389b</td></tr>
+          <tr><td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-x86_64.apk">x86_64</a></td><td>安卓模拟器</td><td>87.8 MB</td><td class="mono">187a96ca5baf5769</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small" style="margin-top:10px">调试签名的包，自己装自己测。如果手机上已装过官方版本，要先卸载再装（卸载会清掉那台设备上的聊天记录和笔记，先备份）。</p>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <div class="wrap">
+    <p class="kicker reveal">FAQ</p>
+    <h2 class="reveal" style="--d:60ms">常见问题</h2>
+    <div style="margin-top:22px" class="reveal">
+      <details><summary>我的手机能用吗？</summary><div class="body">
+        <p>Android 11（2020 年前后发布的机型基本都满足）或更高、任意品牌都行。低于 11 装不上——不是没测试，而是这个项目必须用两个 API 30 才有的能力：<span class="mono">AccessibilityService.takeScreenshot</span>（截屏）和 <span class="mono">ACTION_IME_ENTER</span>（正确提交输入）。调低只会得到一个能装但看不见屏幕的废包。</p></div></details>
+      <details><summary>为什么要 85 MB？</summary><div class="body">
+        <p>离线语音包：模型 38 MB + 推理库（每个 ABI 各带一份 onnxruntime 与 sherpa JNI，约 27 MB）。这就是"拔了网线也能说话"的价钱。</p></div></details>
+      <details><summary>要花钱吗？数据会发给谁？</summary><div class="body">
+        <p>软件免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的一键路线。数据流向只有两条——你选定的模型/语音服务商，以及可选的云端语音识别。<b>记忆不进任何后端</b>（笔记本只在本机），保险箱内容不出设备，离线语音包连文本都不出设备。</p></div></details>
+      <details><summary>「小梦」是什么名字？</summary><div class="body">
+        <p>小梦是<b>这只宠物的名字</b>——应用本来就支持给宠物起名，我把它设成了默认名，形象选择器、自我介绍、语音退出指令里都是它。桌面上的应用图标仍叫 <b>Andee</b>，那是它所属的开源项目名，许可证不允许在面向用户的分发里替换掉，详见下面的授权说明。</p></div></details>
+      <details><summary>它会偷看我的屏幕吗？</summary><div class="body">
+        <p>能看，而且这是设计目的：只有无障碍 + 截屏它能替你办事。你可以随时在系统设置里关掉无障碍服务（那一刻它就退化成只会聊天的球），也可以随时语音让它休息。屏幕内容只进你选的那个模型；通知触发的自动回合还被额外限制了能碰什么。</p></div></details>
+      <details><summary>能换成我自己的形象 / 名字 / 音色吗？</summary><div class="body">
+        <p>都能。形象是一颗程序化绘制的球，全部长相写在一张参数表里（另有奶油、八戒、兔子、熊、小恶魔五套现成形象可切换）；名字在引导页就能选或自己填；音色对应模型的说话人编号，换一行数字就行。</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 授权 ================= -->
+<section id="license">
+  <div class="wrap">
+    <p class="kicker reveal">License &amp; changes</p>
+    <h2 class="reveal" style="--d:60ms">授权与改动</h2>
+    <div class="panel reveal" style="--d:100ms;margin-top:20px">
+      <p>这里的安装包基于开源项目 <b>Andee</b>（© 2026 KUAFUAI，<a href="https://github.com/kuafuai/andee">github.com/kuafuai/andee</a>）修改而成，按它的 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">LICENSE（Apache License 2.0 附加条款）</a> 分发。逐文件改动补丁：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch">xiaomeng-changes.patch</a>。</p>
       <ul class="tight">
-        <li>点按 / 长按 / 拖动 / 滑动（可跨多屏）</li>
-        <li>输入文字、提交输入框</li>
-        <li>返回、主页、多任务、通知栏、快捷设置</li>
-        <li>等界面变成想要的样子再继续</li>
+        <li>对用户显示的<b>产品名、应用图标、版权信息保持原样</b>（该许可证 A.1(a) 不允许替换），本页与小梦的说明属于"在旁边加上自己的说明"。</li>
+        <li><b>LICENSE 全文随安装包一起分发</b>，改动逐条声明（A.1(c) / Apache-2.0 §4(b)）。</li>
+        <li>本站不是 KUAFUAI 的官方发布，也不是把 Andee 装进自己产品里售卖的商品。</li>
       </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="ico">机</span>用系统与设备</h3>
+      <h3 style="margin:22px 0 10px">相对上游 0.9.1 改了什么</h3>
       <ul class="tight">
-        <li>启动 App、打开链接、设闹钟</li>
-        <li>读写日历、查联系人、发短信</li>
-        <li>调音量亮度、读通知与通话记录</li>
-        <li>查位置 / 步数 / 电量 / 传感器</li>
-        <li>拨号需要你明确同意才会真拨出去</li>
+        <li>默认形象按参考图重做：蓝球 + 两颗同向倾斜的白色胶囊眼、整对偏心；为此给渲染器加了 <span class="mono">eyePairX / eyeLean / mouthX</span> 三个零即关闭的新参数。</li>
+        <li>新增<b>内置离线语音包</b>：sherpa-onnx 引擎 + 多说话人模型随 APK 分发，设置与引导页可选，音色即时切换。</li>
+        <li>设备自检认识新引擎：选离线包时不再误报"缺密钥"，改为检查模型是否真在包里。</li>
+        <li>宠物默认名设为「小梦」（英文界面 Xiaomeng），并加了「退出小梦 / 关闭小梦 / 小梦休息一下」等语音退出说法，旧说法保留。</li>
+        <li>Release 构建加了 R8 keep 规则，避免混淆掉 JNI 反射读取的配置字段；补齐了打包却没挂载的中文变音规则文件；修了一个编译期类型错误。</li>
       </ul>
+      <p class="small" style="margin-top:16px">这个仓库放站点文件；上游源码 + 上面的补丁，任何一台装了 Android SDK 的机器都能复现这个包。</p>
     </div>
-
-    <div class="card">
-      <h3><span class="ico">嘴</span>说与听</h3>
-      <p>回答会念出来。<b>本版本新增离线语音包</b>（6 个音色，模型随 APK 走，不要网络也不要密钥）；听你说话走云端识别；喊醒它的唤醒词判定<b>完全离线</b>在本地跑。</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="ico">记</span>记忆与保险箱</h3>
-      <p>八栏笔记本：自我、在意的事、日记、日程、人、维基、回忆、待办，<b>只存本机</b>。账号密码放保险箱（系统 Keystore 加密），它只替你敲进输入框，<b>不回读、不上传</b>。</p>
-    </div>
-
-    <div class="card">
-      <h3><span class="ico">伴</span>多个身体</h3>
-      <p>跟朋友的设备配对后能互相派活、互相转告；接上 USB 机器狗（CH340/FTDI 串口）时，那条狗被当成<b>它自己的腿</b>——「我过去看看」，而不是"我遥控一个玩具"。</p>
-    </div>
-  </div>
-</section>
-
-<section class="section wrap" id="control">
-  <h2>能真的让 AI 控制手机吗？</h2>
-  <p class="muted" style="max-width:48rem">能——这正是这个项目的设计核心，也是它跟普通语音助手最不一样的地方。代价是你必须给它两个系统权限，并且清楚它被允许做什么、不被允许做什么。</p>
-
-  <div class="panel two" style="margin-top:22px">
-    <div>
-      <h3>装好后要开的两个权限</h3>
-      <ol class="steps">
-        <li><b>悬浮窗（显示在其他应用上层）</b>那颗球要能盖在任何 App 上面。</li>
-        <li><b>无障碍服务</b>这是"控制手机"的开关。安卓只允许无障碍服务读取界面并代替你点按，不开这一项，它就只能聊天、干不了活。</li>
-      </ol>
-      <p class="small">另外按需授权：麦克风（说话）、通知读取（看你收到的消息）、相机（它把摄像头当眼睛）、USB（连机器狗，逐设备弹窗确认）。</p>
-    </div>
-    <div>
-      <h3>它被明确不允许做的事</h3>
-      <div class="lock"><b>陌生人递来的话，不算你的指令。</b>由通知或好友消息触发的回合，碰不到保险箱、不能派活给别人、不能改你的自我认知/在意的事/日记/日程，也不能动舞台和场景。</div>
-      <div class="lock"><b>锁屏时全部屏幕操作禁用。</b>没有解锁，它就点不了任何东西。</div>
-      <div class="lock"><b>密码只进不出。</b>保险箱里的密码只能被键入到输入框，永远不回显、不进上下文、不发往远端模型。</li>
-      <div class="lock"><b>一句"怎么退出"不会被误杀。</b>语音退出要求整句匹配（例如「退出小梦」），问句不会关掉它。</li>
-      <p class="small">另外：支付、输入密码这类高安全界面，系统可能只让它看到黑框——那种情况它会回头请你手动完成那一步。</p>
-    </div>
-  </div>
-</section>
-
-<section class="section wrap" id="voice">
-  <h2>自带离线语音包</h2>
-  <p class="muted" style="max-width:48rem">
-    以前这只桌宠说话只有两条路：系统的 TTS 引擎（各家手机质量天差地别）或云端合成（要密钥、要网）。
-    这一版把推理引擎和模型整个打进 APK：<b>断网也能说话，不用注册、不用密钥、不上传文本</b>。
-  </p>
-  <div class="grid c3" style="margin:22px 0 30px">
-    <div class="card"><h3>怎么做到</h3><p>sherpa-onnx 推理库（三个 ABI 各一份）+ <span class="mono">vits-aishell3</span> 多说话人模型 38 MB，随包解压到应用私有目录。一个模型出 6 个音色，不是 6 个模型。</p></div>
-    <div class="card"><h3>怎么切换</h3><p>设置 → 朗读（说）→ 选「离线语音包」，下面出现 6 个音色。改音色<b>下一句就生效</b>，不用重启、不用重连。</p></div>
-    <div class="card"><h3>代价是什么</h3><p>APK 大 65 MB；输出采样率 8 kHz（电话音质），首次加载约 1 秒，合成速度约 0.5× 实时——按句切分，第一句很快就响。</p></div>
-  </div>
-
-  <h3 style="margin-bottom:14px">六个音色，先试听</h3>
-  <p class="small" style="margin-bottom:16px">以下样本是<b>用 APK 里那份一模一样的模型文件</b>在电脑上直接跑出来的原声，没有经过任何后期。同一句话：「你好，我是住在你屏幕里的桌宠。今天晴，26 度，要不要一起出去走走？」</p>
-  <div class="grid c3">
-    <div class="card voice"><div><span class="name">星辰</span> <span class="id">默认 · 说话人 140</span></div><audio controls preload="none" src="assets/voices/star-140.wav"></audio></div>
-    <div class="card voice"><div><span class="name">薄荷</span> <span class="id">说话人 14</span></div><audio controls preload="none" src="assets/voices/mint-14.wav"></audio></div>
-    <div class="card voice"><div><span class="name">春晓</span> <span class="id">说话人 84</span></div><audio controls preload="none" src="assets/voices/spring-84.wav"></audio></div>
-    <div class="card voice"><div><span class="name">可可</span> <span class="id">说话人 70</span></div><audio controls preload="none" src="assets/voices/cocoa-70.wav"></audio></div>
-    <div class="card voice"><div><span class="name">暖阳</span> <span class="id">说话人 7</span></div><audio controls preload="none" src="assets/voices/sun-7.wav"></audio></div>
-    <div class="card voice"><div><span class="name">夜莺</span> <span class="id">说话人 119</span></div><audio controls preload="none" src="assets/voices/night-119.wav"></audio></div>
-  </div>
-  <p class="small" style="margin-top:14px">说明一下没做的事：这 6 个只是 AISHELL-3 语料里 174 个说话人中挑出来的 6 个<b>不同说话人</b>。我试过用基频和长期谱给它们排"音高阶梯"，实测同一人换一句就能差到跟两个人之间一样多，所以<b>名字只是标签、不代表音色高低</b>，也还没有人在真机上听过挑哪个好。想换 id 改一张表就行。</p>
-</section>
-
-<section class="section wrap" id="install">
-  <h2>安装</h2>
-  <div class="panel">
-    <ol class="steps">
-      <li><b>下载 APK</b>下面的下载表里选一个。不知道选哪个就下第一个（arm64）。</li>
-      <li><b>允许安装未知来源</b>浏览器下载完点开会提示；这是侧载软件的正常流程，只需这一次。</li>
-      <li><b>打开悬浮窗 + 无障碍</b>首次进入会一步步带你开。不开无障碍它能聊天但干不了活。</li>
-      <li><b>填一个模型</b>设置里填 OpenAI 兼容的接口 / key / 模型名即可（也支持官方的 CodeFlying 一键路线）。不填模型它没法思考。</li>
-      <li><b>想离线说话</b>设置 → 朗读（说）→「离线语音包」，挑个音色，断网试一句。</li>
-    </ol>
-  </div>
-
-  <h3 style="margin:30px 0 12px">下载</h3>
-  <div style="overflow-x:auto">
-  <table class="tbl">
-    <thead><tr><th>版本</th><th>适合谁</th><th>大小</th><th>SHA-256（前 16 位）</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">arm64-v8a</a></td>
-        <td>2017 年以后的绝大多数手机和平板</td><td>85.7 MB</td><td class="mono">d33454aca8757608</td>
-      </tr>
-      <tr>
-        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-armv7.apk">armeabi-v7a</a></td>
-        <td>更老的 32 位机型</td><td>84.2 MB</td><td class="mono">168185544045d598</td>
-      </tr>
-      <tr>
-        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-x86_64.apk">x86_64</a></td>
-        <td>安卓模拟器</td><td>87.8 MB</td><td class="mono">b6b7a155dfcc8cb1</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  <p class="small" style="margin-top:10px">这是 <b>debug 签名的调试包</b>，用来自己装自己测。它和正式发布的签名不同：如果手机上已经装过官方版，要先卸载再装本包（卸载会清掉那台设备上的聊天记录和笔记，先备份）。</p>
-</section>
-
-<section class="section wrap" id="faq">
-  <h2>常见问题</h2>
-  <details><summary>我的手机能用吗？</summary><div class="body">
-    <p>Android 11（2020 年前后发布的机型基本都满足）或更高、任意品牌都可以装。低于 11 的系统装不上——不是没测试，而是这个项目必须用两个 API 30 才有的能力：<span class="mono">AccessibilityService.takeScreenshot</span>（截屏）和 <span class="mono">ACTION_IME_ENTER</span>（正确提交输入）。把最低版本调低会得到一个能装但看不见于屏幕的废包，所以没有调。</p>
-  </div></details>
-  <details><summary>为什么要 85 MB，比原版大这么多？</summary><div class="body">
-    <p>离线语音包：模型 38 MB + 推理库（每个 ABI 各带一份 onnxruntime 与 sherpa JNI，约 27 MB）。这就是"拔了网线也能说话"的价钱。</p>
-  </div></details>
-  <details><summary>要花钱吗？数据会发给谁？</summary><div class="body">
-    <p>软件本身免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的 CodeFlying 路线。数据流向只有两条——你选定的模型/语音服务商，以及可选的 火山/Google 语音识别。<b>记忆不进任何后端</b>（笔记本是 localOnly），保险箱内容不出设备，本版的离线语音包连文本都不出设备。它是个跑在你手机上的本地 agent，不是云端机器人的客户端。</p>
-  </div></details>
-  <details><summary>「小梦」和 Andee 是什么关系？</summary><div class="body">
-    <p>Andee 是上游开源项目的名字（见<a href="https://github.com/kuafuai/andee"> kuafuai/andee </a>），它的图标和应用名就是它自己，这些我一个字都没改。<b>小梦是这只宠物的名字</b>——应用本来就支持给宠物起名字，我做的事是把默认名设成小梦，并把形象重新画了一遍、加了离线语音包。因为上游许可证不允许对最终用户换掉产品名，所以桌面上那个图标仍然写着 Andee，点进去养的是小梦。</p>
-  </div></details>
-  <details><summary>形象到底长什么样？</summary><div class="body">
-    <p>这一版把默认形象重画成更干净的"豆豆眼"路线：去掉原来的两只角，眼睛收小并靠得更近，双颊加了淡粉腮红，蓝色提亮成天空蓝，只留一个小而对称的笑。页首那张是我照着参数画的示意图——真机上它是 OpenGL 实时渲染的一颗球，会呼吸、会歪头、心情变颜色，以真机为准。</p>
-  </div></details>
-  <details><summary>它会偷看我的屏幕吗？</summary><div class="body">
-    <p>能看，而且这是设计目的：只有无障碍 + 截屏它能替你办事。你可以随时在系统设置里关掉无障碍服务（那一刻它就退化成只会聊天的球），也可以随时语音让它休息。所有屏幕内容只进你选的模型；通知触发的自动回合还被额外限制了能碰什么、不能碰什么。</p>
-  </div></details>
-  <details><summary>我能改成自己的形象/名字/音色吗？</summary><div class="body">
-    <p>都能。形象是一颗程序化绘制的球，全部参数写在一张表里（有六套现成形象可切换）；名字在引导页就能选或自己填；音色对应模型的说话人编号，换一行数字就行。源码和改动清单都在下面。</p>
-  </div></details>
-</section>
-
-<section class="section wrap" id="license">
-  <h2>授权与改动声明</h2>
-  <div class="panel">
-    <p>本站分发的安装包是开源项目 <b>Andee</b>（© 2026 KUAFUAI，<a href="https://github.com/kuafuai/andee">github.com/kuafuai/andee</a>）的<b>修改版</b>，按 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">Apache License 2.0 附加条款（该项目的 LICENSE）</a> 分发。</p>
-    <p>按 LICENSE Part A 的要求：</p>
-    <ul class="tight">
-      <li>应用对用户显示的<b>产品名、图标、版权信息均保持上游原样</b>（A.1(a)），本页与小梦的说明属于"在旁边加上自己的说明"。</li>
-      <li><b>LICENSE 全文随安装包一起分发</b>（见下载页与 Release 资产）。</li>
-      <li><b>本版改动了哪些文件</b>，逐条列在 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md（修改说明）</a>，并附可直接应用的 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch">源码补丁</a>（A.1(c) / Apache-2.0 §4(b)）。</li>
-      <li>本站不是 KUAFUAI 的官方发布，也不是一个把 Andee 装进自己产品里售卖的商品（A.1(b)、A.1(d) 均不适用）。</li>
-    </ul>
-    <h3 style="margin-top:22px">相对上游 0.9.1 改了什么</h3>
-    <ul class="tight">
-      <li>默认形象重设计（去角、豆豆眼、腮红、天空蓝），几何参数在安全余量内并已核过约束。</li>
-      <li>新增<b>内置离线语音包</b>：sherpa-onnx 引擎 + 多说话人模型随 APK 分发，设置与引导页可选，音色即时切换。</li>
-      <li>设备自检认识新引擎：选离线包时不再误报"缺密钥"，改为检查模型是否真在包里。</li>
-      <li>宠物默认名设为「小梦」（英文界面 Xiaomeng），并加了「退出小梦 / 关闭小梦 / 小梦休息一下」等语音退出说法，旧说法保留。</li>
-      <li>Release 构建加了 R8 keep 规则，避免混淆掉 JNI 反射读取的配置字段。</li>
-      <li>修了一个类型错误、补齐了四个中文变音规则文件里之前打包却没挂载的两个。</li>
-    </ul>
-    <p class="small" style="margin-top:16px">这个仓库只放<b>站点文件</b>；上游源码在 <a href="https://github.com/kuafuai/andee">kuafuai/andee</a>，本版的<b>逐文件改动补丁</b>放在 Releases 里：
-      <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch">xiaomeng-changes.patch</a>（17 个文件，93 KB）。
-      离线模型与推理库不在补丁里，补丁头部写了去哪取、要多大字节。任何一台装了 Android SDK 的机器都能照着上游 + 补丁自己复现这个包——不必只信我这份。</p>
   </div>
 </section>
 
@@ -378,16 +534,76 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p style="margin:0 0 6px"><b>小梦 · Andee 个人改造版</b> — 一个住在手机里的 AI 桌宠。</p>
-    <p style="margin:0">
-      项目源码与 Releases：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet">qianqianlaifeng/xiaomeng-pet</a> ·
-      上游：<a href="https://github.com/kuafuai/andee">kuafuai/andee</a> ·
-      许可：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">LICENSE</a> ·
-      改动：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md</a>
+    <p style="margin:0 0 8px"><b style="color:var(--ink)">小梦</b> — 一个住在手机里的 AI 桌宠。</p>
+    <p style="margin:0 0 8px">
+      <a href="https://github.com/qianqianlaifeng/xiaomeng-pet">仓库与 Releases</a> ·
+      <a href="https://github.com/kuafuai/andee">上游 Andee</a> ·
+      <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">LICENSE</a> ·
+      <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">改动说明</a>
     </p>
-    <p style="margin:14px 0 0" class="small">本页只提供技术性分发，不构成任何法律意见。安装包为 debug 签名，功能以真机为准。</p>
+    <p style="margin:0">本页只提供技术性分发，不构成法律意见。形象与语音以真机为准。</p>
   </div>
 </footer>
 
+<script>
+(function(){
+  var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 滚动进度条
+  var bar = document.getElementById('bar');
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+  }
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // 入场
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(function(n){ io.observe(n); });
+
+  // 数字滚动
+  document.querySelectorAll('[data-to]').forEach(function(el){
+    var to = +el.dataset.to, suf = el.dataset.suffix || '';
+    if (to === 0) { el.textContent = '0' + suf; return; }
+    var o = new IntersectionObserver(function(es){
+      if(!es[0].isIntersecting) return; o.disconnect();
+      if (rm) { el.textContent = to + suf; return; }
+      var t0 = performance.now(), dur = 1100;
+      (function step(t){
+        var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(to * e) + suf;
+        if (p < 1) requestAnimationFrame(step);
+      })(t0);
+    });
+    o.observe(el);
+  });
+
+  // 鼠标视差
+  var pet = document.getElementById('pet');
+  if (pet && !rm) {
+    addEventListener('pointermove', function(e){
+      var x = (e.clientX / innerWidth - .5) * 2, y = (e.clientY / innerHeight - .5) * 2;
+      pet.style.setProperty('--px', x.toFixed(3));
+      pet.style.setProperty('--py', y.toFixed(3));
+    }, {passive:true});
+  }
+
+  // 播放时频谱条
+  document.querySelectorAll('#voices audio').forEach(function(a){
+    var card = a.closest('.card');
+    a.addEventListener('play', function(){
+      document.querySelectorAll('#voices audio').forEach(function(o){ if(o!==a) o.pause(); });
+      card.classList.add('playing');
+    });
+    ['pause','ended'].forEach(function(ev){ a.addEventListener(ev, function(){ card.classList.remove('playing'); }); });
+  });
+
+  // 跑马灯：复制一份内容才能无缝循环
+  var tr = document.getElementById('track');
+  if (tr) tr.innerHTML += tr.innerHTML;
+})();
+</script>
 </body>
 </html>
