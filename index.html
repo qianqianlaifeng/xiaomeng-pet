@@ -192,6 +192,40 @@ audio{width:100%;height:40px;filter:invert(.92) saturate(.7);border-radius:8px}
 .tbl tbody tr:hover{background:rgba(255,255,255,.04)}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82em;color:var(--azure-3);word-break:break-all}
 .scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0}
+
+/* 下载：两张档位卡 + 三条线路 + 其他机型 */
+.tier{display:flex;flex-direction:column;gap:18px}
+.tierhead{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.tierhead h3{margin:0}
+.mb{font-size:.84rem;color:var(--ink-3);border:1px solid var(--line-2);
+  border-radius:999px;padding:5px 13px;white-space:nowrap;flex:none}
+.tier p{margin:0}
+.routes{display:grid;grid-template-columns:1fr;gap:12px}
+.routes .btn{width:100%;min-height:48px;padding:12px 16px;font-size:.95rem}
+.alt{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;
+  padding-top:16px;border-top:1px dashed var(--line)}
+.alt .small{color:var(--ink-3)}
+.rlink{color:var(--azure-3);text-decoration:none;border-bottom:1px solid transparent}
+.rlink:hover{border-bottom-color:var(--azure-3)}
+
+/* 测速：每行一盏灯，最快那条亮绿并闪 */
+.stout{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.strow{display:grid;grid-template-columns:auto minmax(84px,1fr) minmax(70px,2fr) auto;
+  align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);
+  border-radius:14px;background:rgba(255,255,255,.02);transition:border-color .3s,background .3s}
+.strow span{font-weight:650}
+.lamp{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.16);flex:none}
+.stbar{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;min-width:0}
+.stbar i{display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#2b8bff,#4fd08a);transition:width .5s var(--ease)}
+.strow small{color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.strow.best{border-color:rgba(79,208,138,.5);background:rgba(79,208,138,.07)}
+.strow.best .lamp{background:#4fd08a;animation:pulse 2s infinite}
+.strow.best small{color:#4fd08a;font-weight:700}
+.strow.dead .lamp{background:#ff6b6b}
+.strow.dead small{color:#ff8f8f}
+.stsum{color:var(--ink-3)}
+.stsum b{color:#4fd08a}
 /* 网格/弹性子项默认 min-width:auto，会被内部宽表格顶穿视口——统一放开 */
 .grid>*,.two>*,.bento>*,.hero .wrap>*,.stats>*{min-width:0}
 
@@ -236,6 +270,7 @@ details[open] summary::after{transform:rotate(-135deg)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .reveal{opacity:1;transform:none}
+  .strow.best .lamp{animation:none;box-shadow:0 0 0 4px rgba(79,208,138,.22)}
 }
 </style>
 </head>
@@ -466,7 +501,7 @@ details[open] summary::after{transform:rotate(-135deg)}
     <div class="grid c2">
       <div class="card tier reveal">
         <div class="tierhead"><h3>完整版</h3><span class="mb">65 MB</span></div>
-        <p>自带离线语音包：<b>断网也能说话</b>，6 个音色随便换。绝大多数人应该下这个。</p>
+        <p>自带离线语音包：<b>断网也能听话、也能说话</b>，6 个音色随便换。绝大多数人应该下这个。</p>
         <div class="routes"><a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">下载 完整版</a><a class="btn btn-g" href="https://gh-proxy.com/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">加速线路 A</a><a class="btn btn-g" href="https://ghfast.top/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">加速线路 B</a></div>
         <div class="alt">
           <span class="small">其他机型：</span>
@@ -476,7 +511,7 @@ details[open] summary::after{transform:rotate(-135deg)}
       </div>
       <div class="card tier reveal" style="--d:80ms">
         <div class="tierhead"><h3>极速版</h3><span class="mb">9.5 MB</span></div>
-        <p>不含语音模型，说话用系统自带音色，<b>其余功能完全一样</b>。网络不好、流量紧张，先试这个。</p>
+        <p>不含语音模型，说话用系统自带音色、听你说话要另外配服务，<b>其余功能完全一样</b>。网络不好、流量紧张，先试这个。</p>
         <div class="routes"><a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">下载 极速版</a><a class="btn btn-g" href="https://gh-proxy.com/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">加速线路 A</a><a class="btn btn-g" href="https://ghfast.top/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">加速线路 B</a></div>
         <div class="alt">
           <span class="small">同样支持：</span>
@@ -616,8 +651,8 @@ details[open] summary::after{transform:rotate(-135deg)}
       ];
       var out = document.getElementById('stout');
       out.innerHTML = routes.map(function (r, i) {
-        return '<div class="strow" data-i="' + i + '"><span>' + r[0] + '</span>' +
-               '<div class="stbar"><i></i></div><small>测速中…</small></div>';
+        return '<div class="strow" data-i="' + i + '"><i class="lamp"></i><span>' + r[0] +
+               '</span><div class="stbar"><i></i></div><small>测速中…</small></div>';
       }).join('');
       st.disabled = true; st.textContent = '正在测…';
       var done = 0, best = -1, bestSpd = -1;
@@ -634,14 +669,25 @@ details[open] summary::after{transform:rotate(-135deg)}
           })
           .catch(function (e) {
             var row = out.querySelector('[data-i="' + i + '"]');
+            if (!row) return;
+            row.classList.add('dead');
             row.querySelector('small').textContent = '不通';
           })
           .then(function () {
             if (++done === routes.length) {
-              if (best >= 0) out.querySelector('[data-i="' + best + '"]').classList.add('best');
+              var win = best >= 0 ? out.querySelector('[data-i="' + best + '"]') : null;
+              if (win) {
+                win.classList.add('best');
+                out.insertAdjacentHTML('beforeend',
+                  '<p class="stsum">最快的是 <b>' + routes[best][0] + '</b> —— 就是上面亮绿灯闪的那条，' +
+                  '下面按钮换「加速线路」时按 A / B 的名字对一下就行。</p>');
+              } else {
+                out.insertAdjacentHTML('beforeend',
+                  '<p class="stsum">三条都没通——大概是此刻的网络拦住了。换个网络或稍后再测。</p>');
+              }
               out.insertAdjacentHTML('beforeend',
-                '<small style="color:var(--ink-3)">绿色 = 你当前网络下最快的一条。测的是 1 MB 小文件，含握手时间，' +
-                '大文件实际速度通常比这个数高。</small>');
+                '<small class="stsum">测的是 1 MB 小文件、含握手时间，大文件实际速度通常比这个数高。' +
+                '绿灯闪 = 你这台设备当前最快的一条。</small>');
               st.disabled = false; st.textContent = '再测一次';
             }
           });
