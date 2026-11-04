@@ -22,6 +22,14 @@
 
 ## 自己构建
 
+**本仓库只放站点文件**（`index.html` + `assets/`）。源码 = 上游仓库 + 本版改动补丁：
+
+1. `git clone https://github.com/kuafuai/andee`
+2. 按 [Releases 里的 `xiaomeng-changes.patch`](https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch) 应用改动（17 个文件）
+3. 补上补丁里不含的二进制配料（补丁头部写了来源与应有字节数）：
+   - sherpa-onnx **v2.0.1** android tarball → `libsherpa-onnx-jni.so` + `libonnxruntime.so`（arm64-v8a / armeabi-v7a / x86_64）放进 `app/src/main/jniLibs/<abi>/`
+   - `csukuangfj/vits-zh-aishell3` → 7 个文件放进 `app/src/main/assets/tts-model/`，其中 `vits-aishell3.int8.onnx` 应为 **39,870,124 字节**（下残缺文件会得到 26 MB 的坏包，引擎报 `Protobuf parsing failed`）
+
 ```bash
 # 需要 JDK 17 与 Android SDK（platform 34 + build-tools 34.0.0）
 ./gradlew :app:assembleDebug
