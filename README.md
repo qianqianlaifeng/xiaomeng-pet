@@ -10,8 +10,8 @@
 
 - 上游项目：[kuafuai/andee](https://github.com/kuafuai/andee)（© 2026 KUAFUAI，Apache-2.0 + Part A 附加条款）
 - 本站点分发的是它的**修改版**，改动清单见 [Releases 里的 NOTICE.md](https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md)
-- 按上游许可证 A.1(a)，**产品名、图标、版权信息保持上游原样**：桌面图标仍然叫 Andee
-- 「小梦」是**这只宠物的名字**（应用本身支持给宠物起名），不是产品名
+- ⚠️ 本版把**应用名改为小梦**并**替换了启动图标**，这正是上游 LICENSE Part A.1(a) 约束的行为：**对外分发前应取得 KUAFUAI 书面授权**；自用与源码分发不受此条限制。详见 NOTICE.md 开头一段
+- 「小梦」既是这只宠物的名字，也是本版的应用显示名与图标
 - 本仓库不是 KUAFUAI 官方发布
 
 ## 要求
