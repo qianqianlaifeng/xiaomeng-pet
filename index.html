@@ -356,7 +356,7 @@
     <ul class="tight">
       <li>应用对用户显示的<b>产品名、图标、版权信息均保持上游原样</b>（A.1(a)），本页与小梦的说明属于"在旁边加上自己的说明"。</li>
       <li><b>LICENSE 全文随安装包一起分发</b>（见下载页与 Release 资产）。</li>
-      <li><b>本版改动了哪些文件</b>，逐条列在 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md（修改说明）</a>（A.1(c) / Apache-2.0 §4(b)）。</li>
+      <li><b>本版改动了哪些文件</b>，逐条列在 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md（修改说明）</a>，并附可直接应用的 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch">源码补丁</a>（A.1(c) / Apache-2.0 §4(b)）。</li>
       <li>本站不是 KUAFUAI 的官方发布，也不是一个把 Andee 装进自己产品里售卖的商品（A.1(b)、A.1(d) 均不适用）。</li>
     </ul>
     <h3 style="margin-top:22px">相对上游 0.9.1 改了什么</h3>
@@ -368,7 +368,9 @@
       <li>Release 构建加了 R8 keep 规则，避免混淆掉 JNI 反射读取的配置字段。</li>
       <li>修了一个类型错误、补齐了四个中文变音规则文件里之前打包却没挂载的两个。</li>
     </ul>
-    <p class="small" style="margin-top:16px">源码、构建方式与完整 diff 都在仓库里：任意一台装了 Android SDK 的机器都能自己复现这个包——这也欢迎你来做，不必只信我这份。</p>
+    <p class="small" style="margin-top:16px">这个仓库只放<b>站点文件</b>；上游源码在 <a href="https://github.com/kuafuai/andee">kuafuai/andee</a>，本版的<b>逐文件改动补丁</b>放在 Releases 里：
+      <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-changes.patch">xiaomeng-changes.patch</a>（17 个文件，93 KB）。
+      离线模型与推理库不在补丁里，补丁头部写了去哪取、要多大字节。任何一台装了 Android SDK 的机器都能照着上游 + 补丁自己复现这个包——不必只信我这份。</p>
   </div>
 </section>
 
