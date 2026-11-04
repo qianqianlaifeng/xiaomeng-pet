@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小梦 · 住在手机里的 AI 桌宠（Andee 小梦版）</title>
+<meta name="description" content="一个跑在 Android 手机和平板上的 AI 桌宠：看得见你的屏幕、点得动任何 App、会说话会听话，自带离线语音包，不联网也能开口。基于开源项目 Andee 的个人改造版。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%235aa7f5'/%3E%3Ccircle cx='23' cy='29' r='6' fill='%230d1c33'/%3E%3Ccircle cx='41' cy='29' r='6' fill='%230d1c33'/%3E%3Cpath d='M25 41q7 6 14 0' stroke='%230d1c33' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='21' cy='27' r='2' fill='%23fff'/%3E%3Ccircle cx='39' cy='27' r='2' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#12203a; --ink-2:#42536f; --ink-3:#6b7b95;
+    --sky:#2f7fe0; --sky-deep:#1c5cb0; --coral:#ff8a6b; --coral-soft:#ffd9cd;
+    --paper:#f6f8fc; --card:#ffffff; --line:#e2e8f2;
+    --radius:14px; --shadow:0 1px 2px rgba(18,32,58,.06), 0 10px 30px rgba(18,32,58,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,sans-serif;
+    font-size:17px; line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--sky-deep)}
+  h1,h2,h3{line-height:1.25; margin:0 0 .5em; letter-spacing:-.01em}
+  h1{font-size:clamp(2rem,6vw,3.1rem); font-weight:800}
+  h2{font-size:clamp(1.45rem,3.6vw,2rem); font-weight:750}
+  h3{font-size:1.08rem; font-weight:700}
+  p{margin:0 0 1em}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 20px}
+  .section{padding:64px 0}
+  .muted{color:var(--ink-2)}
+  .small{font-size:.92rem; color:var(--ink-3)}
+
+  /* nav */
+  .nav{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.6) blur(10px);
+       background:rgba(246,248,252,.86); border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex; align-items:center; gap:16px; height:60px}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; color:var(--ink); text-decoration:none}
+  .brand svg{width:30px; height:30px; flex:none}
+  .nav nav{margin-left:auto; display:flex; gap:4px; flex-wrap:wrap}
+  .nav nav a{padding:8px 10px; border-radius:8px; text-decoration:none; color:var(--ink-2); font-size:.95rem}
+  .nav nav a:hover{background:#eaf1fb; color:var(--ink)}
+
+  /* hero */
+  .hero{padding:56px 0 40px; overflow:hidden}
+  .hero-grid{display:grid; gap:36px; align-items:center}
+  @media(min-width:860px){.hero-grid{grid-template-columns:1.15fr .85fr}}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; background:#e8f2ff; color:var(--sky-deep);
+           border:1px solid #cfe2fb; padding:5px 12px; border-radius:999px; font-size:.86rem; font-weight:600}
+  .lede{font-size:clamp(1.02rem,2.4vw,1.2rem); color:var(--ink-2); max-width:36rem}
+  .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin:26px 0 10px}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:48px;
+       padding:12px 20px; border-radius:12px; font-weight:700; text-decoration:none; font-size:1rem;
+       transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+  .btn-primary{background:var(--sky); color:#fff; box-shadow:0 6px 18px rgba(47,127,224,.28)}
+  .btn-primary:hover{background:var(--sky-deep); transform:translateY(-1px)}
+  .btn-ghost{background:var(--card); color:var(--ink); border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:#c8d6ea; transform:translateY(-1px)}
+  .specs{display:flex; flex-wrap:wrap; gap:6px 18px; color:var(--ink-3); font-size:.92rem}
+  .specs b{color:var(--ink-2); font-weight:600}
+
+  .pet{width:100%; max-width:340px; margin:0 auto; display:block}
+  .pet-note{text-align:center; margin-top:6px}
+
+  /* cards */
+  .grid{display:grid; gap:16px}
+  @media(min-width:640px){.grid.c2{grid-template-columns:1fr 1fr}}
+  @media(min-width:900px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px 20px 16px; box-shadow:var(--shadow)}
+  .card h3{display:flex; align-items:center; gap:9px}
+  .card p:last-child{margin-bottom:0}
+  .ico{width:30px;height:30px;flex:none;border-radius:9px;background:#e8f2ff;display:grid;place-items:center;color:var(--sky-deep);font-weight:800}
+  ul.tight{margin:0; padding-left:1.1em}
+  ul.tight li{margin:.28em 0}
+
+  /* control panel highlight */
+  .panel{background:linear-gradient(180deg,#fff, #fbfdff); border:1px solid var(--line);
+         border-radius:18px; padding:24px; box-shadow:var(--shadow)}
+  .two{display:grid; gap:22px}
+  @media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+  .kv{display:grid; grid-template-columns:auto 1fr; gap:8px 14px; align-items:start}
+  .kv dt{font-weight:700; color:var(--ink); white-space:nowrap}
+  .kv dd{margin:0; color:var(--ink-2)}
+  .lock{border-left:3px solid var(--coral); padding-left:14px; margin:0 0 14px}
+  .lock b{color:var(--ink)}
+
+  /* voices */
+  .voice{display:grid; gap:8px}
+  .voice audio{width:100%; height:44px}
+  .voice .name{font-weight:700}
+  .voice .id{color:var(--ink-3); font-size:.85rem}
+
+  /* steps */
+  ol.steps{counter-reset:s; list-style:none; padding:0; margin:0}
+  ol.steps li{position:relative; padding:0 0 18px 44px}
+  ol.steps li::before{counter-increment:s; content:counter(s); position:absolute; left:0; top:-2px;
+    width:30px;height:30px;border-radius:50%;background:var(--sky);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.9rem}
+  ol.steps li b{display:block; margin-bottom:2px}
+
+  /* tables */
+  .tbl{width:100%; border-collapse:collapse; font-size:.95rem; overflow:hidden; border-radius:12px}
+  .tbl th,.tbl td{text-align:left; padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+  .tbl th{background:#f2f6fc; font-weight:700; color:var(--ink-2); font-size:.88rem}
+  .tbl tr:last-child td{border-bottom:none}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.83em; word-break:break-all}
+
+  details{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:0 18px; margin-bottom:10px}
+  details summary{cursor:pointer; padding:15px 0; font-weight:700; list-style:none; display:flex; gap:10px; align-items:center; min-height:44px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"+"; color:var(--sky); font-weight:800; font-size:1.2rem; line-height:1}
+  details[open] summary::before{content:"–"}
+  details .body{padding:0 0 16px; color:var(--ink-2)}
+  details .body p:last-child{margin-bottom:0}
+
+  .foot{border-top:1px solid var(--line); padding:34px 0 54px; color:var(--ink-3); font-size:.92rem}
+  .foot a{color:var(--ink-2)}
+  .badge{display:inline-block; background:#fff3ee; border:1px solid #ffd9cd; color:#a2451f;
+         border-radius:8px; padding:2px 9px; font-size:.82rem; font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="#5aa7f5"/><circle cx="23" cy="29" r="6" fill="#0d1c33"/><circle cx="41" cy="29" r="6" fill="#0d1c33"/><path d="M25 41q7 6 14 0" stroke="#0d1c33" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="21" cy="27" r="2" fill="#fff"/><circle cx="39" cy="27" r="2" fill="#fff"/></svg>
+      小梦
+    </a>
+    <nav>
+      <a href="#can">能干什么</a>
+      <a href="#control">AI 控制</a>
+      <a href="#voice">语音包</a>
+      <a href="#install">安装</a>
+      <a href="#faq">常见问题</a>
+      <a href="#license">授权与改动</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">Android · 开源项目 Andee 的个人改造版</span>
+      <h1 style="margin-top:14px">小梦<br>住在手机里的 AI 桌宠</h1>
+      <p class="lede">
+        它不是又一个聊天机器人：<b>它看得见你屏幕上的东西，也能替你点下去</b>。
+        桌面上多一颗会呼吸的小球，点一下跟它说话，长按看它做了什么。
+        这一版给它加了<b>随 APK 打包的离线语音包</b>——拔了网线它也会开口。
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">下载 Android 版（arm64，几乎人人能用）</a>
+        <a class="btn btn-ghost" href="#install">先看安装步骤</a>
+      </div>
+      <p class="specs">
+        <span><b>需要</b> Android 11 及以上</span>
+        <span><b>体积</b> 85.7 MB</span>
+        <span><b>版本</b> 0.9.1 小梦版（build 21）</span>
+        <span><b>费用</b> 软件免费，AI 模型自备 key</span>
+      </p>
+    </div>
+    <div>
+      <svg class="pet" viewBox="0 0 340 340" role="img" aria-label="小梦的形象示意：一颗天空蓝的圆球，两颗深色豆豆眼带高光，小小对称的笑，双颊淡粉腮红">
+        <defs>
+          <radialGradient id="g" cx="38%" cy="30%" r="78%">
+            <stop offset="0%" stop-color="#a8dcff"/><stop offset="52%" stop-color="#5aa7f5"/><stop offset="100%" stop-color="#3f7fc9"/>
+          </radialGradient>
+          <radialGradient id="rim" cx="50%" cy="50%" r="50%">
+            <stop offset="74%" stop-color="rgba(255,138,107,0)"/><stop offset="100%" stop-color="rgba(255,138,107,.55)"/>
+          </radialGradient>
+          <radialGradient id="blush" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(255,120,150,.5)"/><stop offset="100%" stop-color="rgba(255,120,150,0)"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="170" cy="312" rx="88" ry="14" fill="rgba(18,32,58,.09)"/>
+        <circle cx="170" cy="168" r="132" fill="url(#g)"/>
+        <circle cx="170" cy="168" r="132" fill="url(#rim)"/>
+        <ellipse cx="112" cy="222" rx="30" ry="17" fill="url(#blush)"/>
+        <ellipse cx="228" cy="222" rx="30" ry="17" fill="url(#blush)"/>
+        <ellipse cx="118" cy="162" rx="21" ry="21" fill="#0d1c33"/>
+        <ellipse cx="222" cy="162" rx="21" ry="21" fill="#0d1c33"/>
+        <circle cx="110" cy="153" r="6.5" fill="#fff" opacity=".92"/>
+        <circle cx="214" cy="153" r="6.5" fill="#fff" opacity=".92"/>
+        <circle cx="127" cy="172" r="3.4" fill="#bcdcff" opacity=".85"/>
+        <circle cx="231" cy="172" r="3.4" fill="#bcdcff" opacity=".85"/>
+        <path d="M145 232q25 20 50 0" stroke="#0d1c33" stroke-width="9" stroke-linecap="round" fill="none"/>
+      </svg>
+      <p class="small pet-note">形象示意（海报图）。真机是 OpenGL 实时渲染，会呼吸、会眨眼、心情会变颜色。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" id="can">
+  <h2>它到底能干什么</h2>
+  <p class="muted" style="max-width:44rem">下面每一条都对应应用里真实存在的工具，不是愿景。<span class="badge">全部在你手机本机执行</span></p>
+  <div class="grid c3" style="margin-top:22px">
+
+    <div class="card">
+      <h3><span class="ico">眼</span>看屏幕</h3>
+      <p>同时走两条路：<b>无障碍树</b>拿到界面元素和坐标，<b>截图 + 视觉定位模型</b>拿画面。两者互为备份，读不到元素时还能放大某一小块反复看清。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="ico">手</span>动屏幕</h3>
+      <ul class="tight">
+        <li>点按 / 长按 / 拖动 / 滑动（可跨多屏）</li>
+        <li>输入文字、提交输入框</li>
+        <li>返回、主页、多任务、通知栏、快捷设置</li>
+        <li>等界面变成想要的样子再继续</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="ico">机</span>用系统与设备</h3>
+      <ul class="tight">
+        <li>启动 App、打开链接、设闹钟</li>
+        <li>读写日历、查联系人、发短信</li>
+        <li>调音量亮度、读通知与通话记录</li>
+        <li>查位置 / 步数 / 电量 / 传感器</li>
+        <li>拨号需要你明确同意才会真拨出去</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="ico">嘴</span>说与听</h3>
+      <p>回答会念出来。<b>本版本新增离线语音包</b>（6 个音色，模型随 APK 走，不要网络也不要密钥）；听你说话走云端识别；喊醒它的唤醒词判定<b>完全离线</b>在本地跑。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="ico">记</span>记忆与保险箱</h3>
+      <p>八栏笔记本：自我、在意的事、日记、日程、人、维基、回忆、待办，<b>只存本机</b>。账号密码放保险箱（系统 Keystore 加密），它只替你敲进输入框，<b>不回读、不上传</b>。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="ico">伴</span>多个身体</h3>
+      <p>跟朋友的设备配对后能互相派活、互相转告；接上 USB 机器狗（CH340/FTDI 串口）时，那条狗被当成<b>它自己的腿</b>——「我过去看看」，而不是"我遥控一个玩具"。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" id="control">
+  <h2>能真的让 AI 控制手机吗？</h2>
+  <p class="muted" style="max-width:48rem">能——这正是这个项目的设计核心，也是它跟普通语音助手最不一样的地方。代价是你必须给它两个系统权限，并且清楚它被允许做什么、不被允许做什么。</p>
+
+  <div class="panel two" style="margin-top:22px">
+    <div>
+      <h3>装好后要开的两个权限</h3>
+      <ol class="steps">
+        <li><b>悬浮窗（显示在其他应用上层）</b>那颗球要能盖在任何 App 上面。</li>
+        <li><b>无障碍服务</b>这是"控制手机"的开关。安卓只允许无障碍服务读取界面并代替你点按，不开这一项，它就只能聊天、干不了活。</li>
+      </ol>
+      <p class="small">另外按需授权：麦克风（说话）、通知读取（看你收到的消息）、相机（它把摄像头当眼睛）、USB（连机器狗，逐设备弹窗确认）。</p>
+    </div>
+    <div>
+      <h3>它被明确不允许做的事</h3>
+      <div class="lock"><b>陌生人递来的话，不算你的指令。</b>由通知或好友消息触发的回合，碰不到保险箱、不能派活给别人、不能改你的自我认知/在意的事/日记/日程，也不能动舞台和场景。</div>
+      <div class="lock"><b>锁屏时全部屏幕操作禁用。</b>没有解锁，它就点不了任何东西。</div>
+      <div class="lock"><b>密码只进不出。</b>保险箱里的密码只能被键入到输入框，永远不回显、不进上下文、不发往远端模型。</li>
+      <div class="lock"><b>一句"怎么退出"不会被误杀。</b>语音退出要求整句匹配（例如「退出小梦」），问句不会关掉它。</li>
+      <p class="small">另外：支付、输入密码这类高安全界面，系统可能只让它看到黑框——那种情况它会回头请你手动完成那一步。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" id="voice">
+  <h2>自带离线语音包</h2>
+  <p class="muted" style="max-width:48rem">
+    以前这只桌宠说话只有两条路：系统的 TTS 引擎（各家手机质量天差地别）或云端合成（要密钥、要网）。
+    这一版把推理引擎和模型整个打进 APK：<b>断网也能说话，不用注册、不用密钥、不上传文本</b>。
+  </p>
+  <div class="grid c3" style="margin:22px 0 30px">
+    <div class="card"><h3>怎么做到</h3><p>sherpa-onnx 推理库（三个 ABI 各一份）+ <span class="mono">vits-aishell3</span> 多说话人模型 38 MB，随包解压到应用私有目录。一个模型出 6 个音色，不是 6 个模型。</p></div>
+    <div class="card"><h3>怎么切换</h3><p>设置 → 朗读（说）→ 选「离线语音包」，下面出现 6 个音色。改音色<b>下一句就生效</b>，不用重启、不用重连。</p></div>
+    <div class="card"><h3>代价是什么</h3><p>APK 大 65 MB；输出采样率 8 kHz（电话音质），首次加载约 1 秒，合成速度约 0.5× 实时——按句切分，第一句很快就响。</p></div>
+  </div>
+
+  <h3 style="margin-bottom:14px">六个音色，先试听</h3>
+  <p class="small" style="margin-bottom:16px">以下样本是<b>用 APK 里那份一模一样的模型文件</b>在电脑上直接跑出来的原声，没有经过任何后期。同一句话：「你好，我是住在你屏幕里的桌宠。今天晴，26 度，要不要一起出去走走？」</p>
+  <div class="grid c3">
+    <div class="card voice"><div><span class="name">星辰</span> <span class="id">默认 · 说话人 140</span></div><audio controls preload="none" src="assets/voices/star-140.wav"></audio></div>
+    <div class="card voice"><div><span class="name">薄荷</span> <span class="id">说话人 14</span></div><audio controls preload="none" src="assets/voices/mint-14.wav"></audio></div>
+    <div class="card voice"><div><span class="name">春晓</span> <span class="id">说话人 84</span></div><audio controls preload="none" src="assets/voices/spring-84.wav"></audio></div>
+    <div class="card voice"><div><span class="name">可可</span> <span class="id">说话人 70</span></div><audio controls preload="none" src="assets/voices/cocoa-70.wav"></audio></div>
+    <div class="card voice"><div><span class="name">暖阳</span> <span class="id">说话人 7</span></div><audio controls preload="none" src="assets/voices/sun-7.wav"></audio></div>
+    <div class="card voice"><div><span class="name">夜莺</span> <span class="id">说话人 119</span></div><audio controls preload="none" src="assets/voices/night-119.wav"></audio></div>
+  </div>
+  <p class="small" style="margin-top:14px">说明一下没做的事：这 6 个只是 AISHELL-3 语料里 174 个说话人中挑出来的 6 个<b>不同说话人</b>。我试过用基频和长期谱给它们排"音高阶梯"，实测同一人换一句就能差到跟两个人之间一样多，所以<b>名字只是标签、不代表音色高低</b>，也还没有人在真机上听过挑哪个好。想换 id 改一张表就行。</p>
+</section>
+
+<section class="section wrap" id="install">
+  <h2>安装</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>下载 APK</b>下面的下载表里选一个。不知道选哪个就下第一个（arm64）。</li>
+      <li><b>允许安装未知来源</b>浏览器下载完点开会提示；这是侧载软件的正常流程，只需这一次。</li>
+      <li><b>打开悬浮窗 + 无障碍</b>首次进入会一步步带你开。不开无障碍它能聊天但干不了活。</li>
+      <li><b>填一个模型</b>设置里填 OpenAI 兼容的接口 / key / 模型名即可（也支持官方的 CodeFlying 一键路线）。不填模型它没法思考。</li>
+      <li><b>想离线说话</b>设置 → 朗读（说）→「离线语音包」，挑个音色，断网试一句。</li>
+    </ol>
+  </div>
+
+  <h3 style="margin:30px 0 12px">下载</h3>
+  <div style="overflow-x:auto">
+  <table class="tbl">
+    <thead><tr><th>版本</th><th>适合谁</th><th>大小</th><th>SHA-256（前 16 位）</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-arm64.apk">arm64-v8a</a></td>
+        <td>2017 年以后的绝大多数手机和平板</td><td>85.7 MB</td><td class="mono">d33454aca8757608</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-armv7.apk">armeabi-v7a</a></td>
+        <td>更老的 32 位机型</td><td>84.2 MB</td><td class="mono">168185544045d598</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/andee-xiaomeng-x86_64.apk">x86_64</a></td>
+        <td>安卓模拟器</td><td>87.8 MB</td><td class="mono">b6b7a155dfcc8cb1</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small" style="margin-top:10px">这是 <b>debug 签名的调试包</b>，用来自己装自己测。它和正式发布的签名不同：如果手机上已经装过官方版，要先卸载再装本包（卸载会清掉那台设备上的聊天记录和笔记，先备份）。</p>
+</section>
+
+<section class="section wrap" id="faq">
+  <h2>常见问题</h2>
+  <details><summary>我的手机能用吗？</summary><div class="body">
+    <p>Android 11（2020 年前后发布的机型基本都满足）或更高、任意品牌都可以装。低于 11 的系统装不上——不是没测试，而是这个项目必须用两个 API 30 才有的能力：<span class="mono">AccessibilityService.takeScreenshot</span>（截屏）和 <span class="mono">ACTION_IME_ENTER</span>（正确提交输入）。把最低版本调低会得到一个能装但看不见于屏幕的废包，所以没有调。</p>
+  </div></details>
+  <details><summary>为什么要 85 MB，比原版大这么多？</summary><div class="body">
+    <p>离线语音包：模型 38 MB + 推理库（每个 ABI 各带一份 onnxruntime 与 sherpa JNI，约 27 MB）。这就是"拔了网线也能说话"的价钱。</p>
+  </div></details>
+  <details><summary>要花钱吗？数据会发给谁？</summary><div class="body">
+    <p>软件本身免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的 CodeFlying 路线。数据流向只有两条——你选定的模型/语音服务商，以及可选的 火山/Google 语音识别。<b>记忆不进任何后端</b>（笔记本是 localOnly），保险箱内容不出设备，本版的离线语音包连文本都不出设备。它是个跑在你手机上的本地 agent，不是云端机器人的客户端。</p>
+  </div></details>
+  <details><summary>「小梦」和 Andee 是什么关系？</summary><div class="body">
+    <p>Andee 是上游开源项目的名字（见<a href="https://github.com/kuafuai/andee"> kuafuai/andee </a>），它的图标和应用名就是它自己，这些我一个字都没改。<b>小梦是这只宠物的名字</b>——应用本来就支持给宠物起名字，我做的事是把默认名设成小梦，并把形象重新画了一遍、加了离线语音包。因为上游许可证不允许对最终用户换掉产品名，所以桌面上那个图标仍然写着 Andee，点进去养的是小梦。</p>
+  </div></details>
+  <details><summary>形象到底长什么样？</summary><div class="body">
+    <p>这一版把默认形象重画成更干净的"豆豆眼"路线：去掉原来的两只角，眼睛收小并靠得更近，双颊加了淡粉腮红，蓝色提亮成天空蓝，只留一个小而对称的笑。页首那张是我照着参数画的示意图——真机上它是 OpenGL 实时渲染的一颗球，会呼吸、会歪头、心情变颜色，以真机为准。</p>
+  </div></details>
+  <details><summary>它会偷看我的屏幕吗？</summary><div class="body">
+    <p>能看，而且这是设计目的：只有无障碍 + 截屏它能替你办事。你可以随时在系统设置里关掉无障碍服务（那一刻它就退化成只会聊天的球），也可以随时语音让它休息。所有屏幕内容只进你选的模型；通知触发的自动回合还被额外限制了能碰什么、不能碰什么。</p>
+  </div></details>
+  <details><summary>我能改成自己的形象/名字/音色吗？</summary><div class="body">
+    <p>都能。形象是一颗程序化绘制的球，全部参数写在一张表里（有六套现成形象可切换）；名字在引导页就能选或自己填；音色对应模型的说话人编号，换一行数字就行。源码和改动清单都在下面。</p>
+  </div></details>
+</section>
+
+<section class="section wrap" id="license">
+  <h2>授权与改动声明</h2>
+  <div class="panel">
+    <p>本站分发的安装包是开源项目 <b>Andee</b>（© 2026 KUAFUAI，<a href="https://github.com/kuafuai/andee">github.com/kuafuai/andee</a>）的<b>修改版</b>，按 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">Apache License 2.0 附加条款（该项目的 LICENSE）</a> 分发。</p>
+    <p>按 LICENSE Part A 的要求：</p>
+    <ul class="tight">
+      <li>应用对用户显示的<b>产品名、图标、版权信息均保持上游原样</b>（A.1(a)），本页与小梦的说明属于"在旁边加上自己的说明"。</li>
+      <li><b>LICENSE 全文随安装包一起分发</b>（见下载页与 Release 资产）。</li>
+      <li><b>本版改动了哪些文件</b>，逐条列在 <a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md（修改说明）</a>（A.1(c) / Apache-2.0 §4(b)）。</li>
+      <li>本站不是 KUAFUAI 的官方发布，也不是一个把 Andee 装进自己产品里售卖的商品（A.1(b)、A.1(d) 均不适用）。</li>
+    </ul>
+    <h3 style="margin-top:22px">相对上游 0.9.1 改了什么</h3>
+    <ul class="tight">
+      <li>默认形象重设计（去角、豆豆眼、腮红、天空蓝），几何参数在安全余量内并已核过约束。</li>
+      <li>新增<b>内置离线语音包</b>：sherpa-onnx 引擎 + 多说话人模型随 APK 分发，设置与引导页可选，音色即时切换。</li>
+      <li>设备自检认识新引擎：选离线包时不再误报"缺密钥"，改为检查模型是否真在包里。</li>
+      <li>宠物默认名设为「小梦」（英文界面 Xiaomeng），并加了「退出小梦 / 关闭小梦 / 小梦休息一下」等语音退出说法，旧说法保留。</li>
+      <li>Release 构建加了 R8 keep 规则，避免混淆掉 JNI 反射读取的配置字段。</li>
+      <li>修了一个类型错误、补齐了四个中文变音规则文件里之前打包却没挂载的两个。</li>
+    </ul>
+    <p class="small" style="margin-top:16px">源码、构建方式与完整 diff 都在仓库里：任意一台装了 Android SDK 的机器都能自己复现这个包——这也欢迎你来做，不必只信我这份。</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p style="margin:0 0 6px"><b>小梦 · Andee 个人改造版</b> — 一个住在手机里的 AI 桌宠。</p>
+    <p style="margin:0">
+      项目源码与 Releases：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet">qianqianlaifeng/xiaomeng-pet</a> ·
+      上游：<a href="https://github.com/kuafuai/andee">kuafuai/andee</a> ·
+      许可：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/LICENSE.txt">LICENSE</a> ·
+      改动：<a href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/NOTICE.md">NOTICE.md</a>
+    </p>
+    <p style="margin:14px 0 0" class="small">本页只提供技术性分发，不构成任何法律意见。安装包为 debug 签名，功能以真机为准。</p>
+  </div>
+</footer>
+
+</body>
+</html>
