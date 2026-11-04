@@ -268,17 +268,17 @@ details[open] summary::after{transform:rotate(-135deg)}
       <p class="lede">
         它不是又一个聊天机器人：<b>它看得见你屏幕上的东西，也能替你点下去</b>。
         桌面上多一颗会呼吸的小球，点一下跟它说话，长按看它做了什么。
-        自带<b>离线语音包</b>——拔了网线它也会开口。
+        自带<b>离线语音包</b>——拔了网线，它既听得懂，也会开口。
       </p>
       <div class="cta">
-        <a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">下载 Android 版（46 MB）</a>
+        <a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">下载 Android 版（65 MB）</a>
         <a class="btn btn-g" href="#control">它怎么控制手机 →</a>
       </div>
       <div class="chips">
         <span><b>系统</b> Android 11+</span>
-        <span><b>体积</b> 完整版 46 MB / 极速版 9.6 MB</span>
+        <span><b>体积</b> 完整版 65 MB / 极速版 9.5 MB</span>
         <span><b>版本</b> 0.9.1 · build 21</span>
-        <span><b>语音</b> 6 个音色，离线可用</span>
+        <span><b>语音</b> 6 个音色 + 离线听写，不要密钥</span>
       </div>
     </div>
 
@@ -320,7 +320,7 @@ details[open] summary::after{transform:rotate(-135deg)}
     <span class="pill"><b>设</b> 闹钟、读写日历</span>
     <span class="pill"><b>读</b> 通知与短信</span>
     <span class="pill"><b>扫码</b> 二维码 / 条码</span>
-    <span class="pill"><b>离线</b> 语音包 6 音色</span>
+    <span class="pill"><b>离线</b> 语音包 6 音色 + 听写</span>
     <span class="pill"><b>唤醒词</b> 完全本地判定</span>
     <span class="pill"><b>保险箱</b> 密码只替你键入</span>
     <span class="pill"><b>机器狗</b> 接上就是它的腿</span>
@@ -344,7 +344,7 @@ details[open] summary::after{transform:rotate(-135deg)}
       <div class="card sp2 reveal" style="--d:40ms"><h3><span class="ico">机</span>系统与设备</h3>
         <p>启动 App、开链接、设闹钟、读写日历、查联系人、发短信、读通知与通话记录、调音量亮度、查位置步数电量。拨号要你明确同意才会真拨出去。</p></div>
       <div class="card sp2 reveal" style="--d:120ms"><h3><span class="ico">嘴</span>说与听</h3>
-        <p>回答会念出来：本页新增<b>离线语音包</b>；听你说话走云端识别；喊醒它的<b>唤醒词判定完全在本地</b>跑。</p></div>
+        <p>回答会念出来，你说的话它也能转成文字：<b>两条都可以走随包的离线模型</b>，不要网、不要密钥；要更好的准确率与中英混说，再接火山 / 谷歌。喊醒它的<b>唤醒词判定完全在本地</b>跑。</p></div>
       <div class="card sp2 reveal" style="--d:200ms"><h3><span class="ico">记</span>记忆与保险箱</h3>
         <p>八栏笔记本：自我、在意的事、日记、日程、人、维基、回忆、待办，只存本机。账号密码进系统 Keystore，只替你敲进输入框。</p></div>
       <div class="card sp3 reveal" style="--d:80ms"><h3><span class="ico">伴</span>多个身体</h3>
@@ -396,13 +396,14 @@ details[open] summary::after{transform:rotate(-135deg)}
     <p class="kicker reveal">Offline voice pack</p>
     <h2 class="reveal" style="--d:60ms">自带离线语音包</h2>
     <p class="muted reveal" style="--d:120ms;max-width:48rem">
-      以前它说话只有两条路：系统 TTS 引擎（各家手机质量天差地别）或云端合成（要密钥、要网）。
-      现在推理引擎和模型整个打进 APK：<b>断网也能说话，不用注册、不用密钥、不上传文本</b>。
+      以前它说话只有两条路：系统 TTS 引擎（各家手机质量天差地别）或云端合成（要密钥、要网）；
+      听你说话则只有云端一条路，没有密钥就听不成。
+      现在推理引擎和模型整个打进 APK：<b>说不说、听不听都归你，断网也能又听又说，不用注册、不用密钥、不上传文本</b>。
     </p>
     <div class="grid c3" style="margin:26px 0 30px">
-      <div class="card reveal"><h3>怎么做到</h3><p>语音引擎和模型<b>整个打进安装包</b>，不联网、不注册、不上传文字。一个模型出 6 个音色。</p></div>
-      <div class="card reveal" style="--d:80ms"><h3>怎么切换</h3><p>设置 → 朗读（说）→ 选「离线语音包」，下面出现 6 个音色。改音色<b>下一句就生效</b>，不用重启、不用重连。</p></div>
-      <div class="card reveal" style="--d:160ms"><h3>代价是什么</h3><p>完整版比极速版大 37 MB（语音模型 + 推理库）。回答是<b>一句一句</b>念的，说完第一句就能开始播，不用等整段。</p></div>
+      <div class="card reveal"><h3>怎么做到</h3><p>语音引擎和模型<b>整个打进安装包</b>，不联网、不注册、不上传文字。说话是一个 174 人模型出 6 个音色；听写另配一个中文流式模型，<b>你说第一句它就在出字</b>。</p></div>
+      <div class="card reveal" style="--d:80ms"><h3>怎么切换</h3><p>两处：设置 → <b>朗读（说）</b>→「离线语音包」，下面出现 6 个音色；设置 → <b>识别（听）</b>→「离线语音包」，点小球就直接转文字。改完<b>下一句就生效</b>，不用重启、不用重连。识别那栏还有一个「不用语音输入」：点小球直接打字，也不再偷偷连任何语音服务。</p></div>
+      <div class="card reveal" style="--d:160ms"><h3>代价是什么</h3><p>完整版比极速版大的那些体积全是这两个模型加推理库。回答是<b>一句一句</b>念的，说完第一句就能开始播，不用等整段；听写是<b>一边说一边出字</b>，说完半秒内定稿。听写以<b>中文为主</b>，句中夹英文单词会转得难看——那种场合请用火山 / 谷歌。</p></div>
     </div>
 
     <h3 class="reveal" style="margin-bottom:10px">六个音色，先试听</h3>
@@ -455,6 +456,7 @@ details[open] summary::after{transform:rotate(-135deg)}
         <ol class="steps reveal" style="--d:100ms">
           <li><b>填一个模型</b>设置里填 OpenAI 兼容的接口 / key / 模型名（也支持官方的一键路线）。不填模型它没法思考。</li>
           <li><b>想离线说话</b>设置 → 朗读（说）→「离线语音包」，挑个音色。</li>
+          <li><b>想离线听话</b>设置 → 识别（听）→「离线语音包」，之后点小球直接转文字，全程不联网。</li>
           <li><b>断网试一句</b>飞行模式里让它说句话，能出声就是真离线。</li>
         </ol>
       </div>
@@ -463,17 +465,17 @@ details[open] summary::after{transform:rotate(-135deg)}
     <h3 id="get" style="margin:34px 0 12px">下载</h3>
     <div class="grid c2">
       <div class="card tier reveal">
-        <div class="tierhead"><h3>完整版</h3><span class="mb">46 MB</span></div>
+        <div class="tierhead"><h3>完整版</h3><span class="mb">65 MB</span></div>
         <p>自带离线语音包：<b>断网也能说话</b>，6 个音色随便换。绝大多数人应该下这个。</p>
         <div class="routes"><a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">下载 完整版</a><a class="btn btn-g" href="https://gh-proxy.com/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">加速线路 A</a><a class="btn btn-g" href="https://ghfast.top/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-arm64.apk">加速线路 B</a></div>
         <div class="alt">
           <span class="small">其他机型：</span>
-          <a class="rlink" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-armv7.apk">armeabi-v7a（45 MB，老 32 位机）</a>
-          <a class="rlink" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-x86_64.apk">x86_64（48 MB，模拟器）</a>
+          <a class="rlink" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-armv7.apk">armeabi-v7a（64 MB，老 32 位机）</a>
+          <a class="rlink" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-full-x86_64.apk">x86_64（67 MB，模拟器）</a>
         </div>
       </div>
       <div class="card tier reveal" style="--d:80ms">
-        <div class="tierhead"><h3>极速版</h3><span class="mb">9.6 MB</span></div>
+        <div class="tierhead"><h3>极速版</h3><span class="mb">9.5 MB</span></div>
         <p>不含语音模型，说话用系统自带音色，<b>其余功能完全一样</b>。网络不好、流量紧张，先试这个。</p>
         <div class="routes"><a class="btn btn-p" href="https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">下载 极速版</a><a class="btn btn-g" href="https://gh-proxy.com/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">加速线路 A</a><a class="btn btn-g" href="https://ghfast.top/https://github.com/qianqianlaifeng/xiaomeng-pet/releases/download/v0.9.1-xiaomeng/xiaomeng-lite-arm64.apk">加速线路 B</a></div>
         <div class="alt">
@@ -495,12 +497,12 @@ details[open] summary::after{transform:rotate(-135deg)}
       <div class="scroll-x"><table class="tbl">
         <thead><tr><th>文件</th><th>大小</th><th>SHA-256</th></tr></thead>
         <tbody>
-          <tr><td>xiaomeng-full-arm64.apk</td><td>48,228,067 B</td><td class="mono">aafa120daf907b3aa47592414a5697a631a22716f5b872b956edc54fa8c1b437</td></tr>
-          <tr><td>xiaomeng-full-armv7.apk</td><td>47,118,059 B</td><td class="mono">5cb5f6a0b5a4dd6493da5fa4a3ca6fa013edb2cdb878a9cc30179ffa537ee914</td></tr>
-          <tr><td>xiaomeng-full-x86_64.apk</td><td>49,882,839 B</td><td class="mono">12ac9a498208ad7422eacd2da6f3f5df0e1058deaa7e89c7e979a9e2e07efdf8</td></tr>
-          <tr><td>xiaomeng-lite-arm64.apk</td><td>9,929,780 B</td><td class="mono">b56c89d08f6262329b6f798bb6972700975f26e5323eb2bceda31323aa94730a</td></tr>
-          <tr><td>xiaomeng-lite-armv7.apk</td><td>9,634,872 B</td><td class="mono">920e775a59af8486ad15a2497e71df8ebec20f9946b692bba88ae1c10c6eafd1</td></tr>
-          <tr><td>xiaomeng-lite-x86_64.apk</td><td>10,372,142 B</td><td class="mono">a5e2c41822b00eb9944515f1069e73a3e2403dac1c679ef554d8855ef008739c</td></tr>
+          <tr><td>xiaomeng-full-arm64.apk</td><td>68,446,147 B</td><td class="mono">792bb44a44a30e0fcf663d7bd98ed67b24d83b2ef8b36349300eb59d742f298e</td></tr>
+          <tr><td>xiaomeng-full-armv7.apk</td><td>67,336,139 B</td><td class="mono">4535fb0b6d3a9c44313a88a8e41a54eeaf235bba010eca232d83c597b5296cdd</td></tr>
+          <tr><td>xiaomeng-full-x86_64.apk</td><td>70,105,015 B</td><td class="mono">fe89d2d38bb57a0da829a2139997db78ba52b294d188da8cdd47ccbef808ae02</td></tr>
+          <tr><td>xiaomeng-lite-arm64.apk</td><td>9,987,124 B</td><td class="mono">67e33d6d5679637ae74b2cea3c7023107d79528adf0ddacb39de2fde07c6bdbf</td></tr>
+          <tr><td>xiaomeng-lite-armv7.apk</td><td>9,688,120 B</td><td class="mono">2eadadd9c72143b81612de8cccc28e4a47245eb1cca605d85f714eafb13d9152</td></tr>
+          <tr><td>xiaomeng-lite-x86_64.apk</td><td>10,429,486 B</td><td class="mono">0d92045cd59347ec477b4f5467f33033ab712725583d312a3c8270b89a3d72ac</td></tr>
         </tbody>
       </table></div>
       <p>下载后如果浏览器提示"该文件可能有害"，是因为它来自 GitHub 而不是应用商店——侧载软件都会这样。装完记得只开<b>悬浮窗</b>和<b>无障碍</b>这两个权限，其他按需。</p>
@@ -516,9 +518,9 @@ details[open] summary::after{transform:rotate(-135deg)}
       <details><summary>我的手机能用吗？</summary><div class="body">
         <p>Android 11（2020 年前后发布的机型基本都满足）或更高、任意品牌都行。低于 11 装不上——不是没测试，而是这个项目必须用两个 API 30 才有的能力：<span class="mono">AccessibilityService.takeScreenshot</span>（截屏）和 <span class="mono">ACTION_IME_ENTER</span>（正确提交输入）。调低只会得到一个能装但看不见屏幕的废包。</p></div></details>
       <details><summary>完整版为什么比极速版大 37 MB？</summary><div class="body">
-        <p>那 37 MB 全是离线语音包：语音模型 38 MB（压进包里约 28 MB）+ 推理库约 9 MB。这就是"拔了网线也能说话"的价钱。不想花这个流量就下<b>极速版</b>，功能一样，只是说话用系统音色。</p></div></details>
+        <p>那 56 MB 全是离线语音包：说话模型 38 MB + 听写模型 25 MB（压进包里各约 27 MB 与 18 MB）+ 推理库约 10 MB。这就是"拔了网线也能听、也能说"的价钱。不想花这个流量就下<b>极速版</b>，功能一样，只是听和说都要另外配服务。</p></div></details>
       <details><summary>要花钱吗？数据会发给谁？</summary><div class="body">
-        <p>软件免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的一键路线。数据流向只有两条——你选定的模型/语音服务商，以及可选的云端语音识别。<b>记忆不进任何后端</b>（笔记本只在本机），保险箱内容不出设备，离线语音包连文本都不出设备。</p></div></details>
+        <p>软件免费，但要一个能思考的大模型：填你自己的 OpenAI 兼容接口，或者走官方的一键路线。数据流向只有两条——你选定的模型服务商，以及语音服务商（<b>听和说都能换成随包的离线模型，那一步谁都不发</b>）。<b>记忆不进任何后端</b>（笔记本只在本机），保险箱内容不出设备，离线语音包连文本都不出设备。</p></div></details>
       <details><summary>能给它换名字吗？</summary><div class="body">
         <p>能。<b>小梦</b>是它的名字，引导页里可以直接改成你想叫的，改完它就用新名字自称，语音里也是。</p></div></details>
       <details><summary>它会偷看我的屏幕吗？</summary><div class="body">
